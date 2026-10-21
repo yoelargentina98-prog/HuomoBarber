@@ -384,3 +384,29 @@ Antes de lanzar la aplicación a producción pública en Google Play Store y App
 5. **Pruebas en fase Beta**:
    - Distribuir compilaciones internas mediante **Google Play Internal Testing** para el personal de Huomo.
    - Distribuir mediante **TestFlight** para usuarios de iOS.
+
+## Verificación de Supabase posterior a la entrega móvil
+
+Revisión del 21 de octubre de 2026:
+
+- La entrega móvil no incorpora migraciones SQL adicionales. Las migraciones `20261021030000`, `20261021030100` y `20261021030200` corresponden a la corrección previa de reservas y ya estaban aplicadas. Se verificó en el proyecto remoto la existencia de turnos, horarios de sucursal, bloqueos y la función de asistencia. No se reejecutaron esas migraciones.
+- La configuración de enlaces móviles se administra en Supabase Auth, no mediante una migración SQL. Los destinos usados por el código son `huomo://cliente` y `huomo://recuperar`.
+- El dominio `https://huomo-barber.vercel.app` mencionado antes en este documento es una referencia de configuración; esta revisión no confirma que sea el despliegue real ni lo agrega a la lista permitida.
+- No se encontró implementación de `signInWithOAuth` ni `signInWithIdToken` para Google/Apple en esta entrega. El login social sigue pendiente de implementación y de configurar las credenciales de los proveedores; no se habilita mediante las migraciones de reservas.
+- Se agregaron y verificaron en Supabase Auth `huomo://cliente` y `huomo://recuperar`, conservando las URLs anteriores, el Site URL y la confirmación por correo. Google y Apple permanecen deshabilitados.
+
+## Acceso con Google (implementación)
+
+Se agregó “Continuar con Google” tanto a Iniciar sesión como a Crear cuenta. El proveedor se configura en Supabase Auth: el secreto de Google nunca se incluye en React ni en el APK. No requiere migraciones SQL adicionales; el trigger existente crea perfiles nuevos exclusivamente como clientes y los roles existentes se resuelven desde el servidor.
+
+Flujo web: Supabase OAuth redirige a `${window.location.origin}/cliente`. Ese destino debe estar permitido exactamente en Supabase para cada dominio utilizado. El layout dirige a empleados existentes al portal que corresponde a su rol.
+
+Flujo móvil: `@capacitor/browser` abre Google fuera del WebView y vuelve a `huomo://cliente`, que ya está permitido en Supabase. Se usa PKCE: el código se canjea en el almacenamiento/contexto de la app que inició el acceso. Se manejan callbacks en caliente y al iniciar la app, cancelación del proveedor y errores de canje. Se mantienen compatibles los enlaces anteriores de recuperación con tokens. No se registran códigos, tokens ni secretos en logs. Los enlaces de confirmación/recuperación PKCE deben abrirse en el mismo navegador o app que inició el proceso.
+
+Después de cambiar el código se debe ejecutar `npm run cap:sync` y recompilar el APK; el APK instalado anteriormente no recibe automáticamente los cambios. Apple sigue fuera del alcance.
+
+Verificación: pruebas de servicio Google y callbacks con mocks, revisión visual del botón en ambas pestañas en el navegador, compilación web y sincronización nativa. El consentimiento real de Google y el retorno en dispositivo requieren una prueba del usuario; no se inició sesión ni se creó una cuenta Google real durante la validación automatizada.
+
+Referencias: https://supabase.com/docs/guides/auth/social-login/auth-google y https://supabase.com/docs/guides/auth/native-mobile-deep-linking.
+
+APK Android actualizado: compilado con `assembleDebug` y verificado que incluye el bundle web vigente, el texto del botón Google y BrowserPlugin. La compilación iOS no se ejecutó en Windows.

@@ -1,0 +1,48 @@
+.google-access {
+  margin: 0 0 24px;
+}
+.google-access__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  border: 1px solid #747775;
+  border-radius: 8px;
+  background: #fff;
+  color: #1f1f1f;
+  font:
+    500 14px/1.4 Arial,
+    sans-serif;
+  cursor: pointer;
+}
+.google-access__button svg {
+  flex-shrink: 0;
+}
+.google-access__button:hover:not(:disabled) {
+  background: #f2f2f2;
+}
+.google-access__button:focus-visible {
+  outline: 3px solid #4285f4;
+  outline-offset: 3px;
+}
+.google-access__button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+.google-access__separator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0 0;
+  color: #65716b;
+  font-size: 13px;
+}
+.google-access__separator::before,
+.google-access__separator::after {
+  content: '';
+  flex: 1;
+  border-top: 1px solid #dce0d4;
+}

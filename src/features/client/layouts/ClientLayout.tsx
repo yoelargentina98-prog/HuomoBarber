@@ -18,6 +18,19 @@ export function ClientLayout() {
     let active = true;
     async function load() {
       try {
+        const callback = new URL(window.location.href);
+        if (
+          callback.searchParams.has('error') ||
+          new URLSearchParams(callback.hash.slice(1)).has('error')
+        ) {
+          navigate('/', {
+            replace: true,
+            state: {
+              authError: 'El acceso con Google fue cancelado o no se pudo completar. Reintentá.',
+            },
+          });
+          return;
+        }
         const user = await getCurrentUserProfile();
         if (active) {
           if (!user) {

@@ -3,12 +3,16 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { WelcomeAccess } from '../features/auth/components/WelcomeAccess';
 import { signInUnified } from '../features/staff/services/admin-session';
+import { signInWithGoogle } from '../features/auth/services/google-sign-in';
+
+vi.mock('../features/auth/services/google-sign-in', () => ({ signInWithGoogle: vi.fn() }));
 
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
   return {
     ...actual,
+    useLocation: () => ({ state: null }),
     useNavigate: () => mockNavigate,
   };
 });
@@ -22,6 +26,26 @@ vi.mock('../features/staff/services/admin-session', () => ({
 describe('Acceso unificado para los 4 roles (WelcomeAccess)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  it('ofrece el mismo ingreso Google en login y registro', async () => {
+    vi.mocked(signInWithGoogle).mockResolvedValue(undefined);
+    const user = userEvent.setup();
+    render(<WelcomeAccess />);
+    await user.click(screen.getByRole('button', { name: 'Continuar con Google' }));
+    expect(signInWithGoogle).toHaveBeenCalledOnce();
+    await user.click(screen.getByRole('tab', { name: 'Crear cuenta' }));
+    await user.click(screen.getByRole('button', { name: 'Continuar con Google' }));
+    expect(signInWithGoogle).toHaveBeenCalledTimes(2);
+  });
+
+  it('permite reintentar cuando no se pudo abrir Google', async () => {
+    vi.mocked(signInWithGoogle).mockRejectedValue(new Error('network'));
+    const user = userEvent.setup();
+    render(<WelcomeAccess />);
+    await user.click(screen.getByRole('button', { name: 'Continuar con Google' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('No se pudo iniciar');
+    expect(screen.getByRole('button', { name: 'Continuar con Google' })).toBeEnabled();
   });
 
   it('no contiene ningún selector ni combobox de roles en el formulario', () => {

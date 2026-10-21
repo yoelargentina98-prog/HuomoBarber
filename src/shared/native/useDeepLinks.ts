@@ -1,83 +1,62 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { App, type URLOpenListenerEvent } from '@capacitor/app';
+import { App } from '@capacitor/app';
+import type { PluginListenerHandle } from '@capacitor/core';
 import { isNativePlatform } from './device-platform';
-import { requireSupabaseClient } from '../../integrations/supabase/client';
+import { acceptNativeAuthUrl } from '../../features/auth/services/native-auth-callback';
 
-/**
- * Hook para procesar Deep Links entrantes (huomo://... o enlaces universales)
- * con tokens de autenticación de Supabase (recuperación de contraseña, confirmación).
- */
+// NativeBridge mounts again when entering another portal; never consume a code twice.
+let lastConsumedUrl = '';
+
+/** Handle both running-app and cold-start callbacks, with one listener per mount. */
 export function useDeepLinks(): void {
   const navigate = useNavigate();
-
   useEffect(() => {
     if (!isNativePlatform()) return;
-
-    let cleanup: (() => void) | null = null;
-
-    async function register() {
+    let active = true;
+    let handle: PluginListenerHandle | undefined;
+    async function receive(url: string) {
+      if (!active || url === lastConsumedUrl) return;
+      lastConsumedUrl = url;
       try {
-        const handle = await App.addListener('appUrlOpen', async (event: URLOpenListenerEvent) => {
-          const urlStr = event.url;
-          if (!urlStr) return;
-
-          try {
-            // El formato puede ser huomo://recuperar#access_token=... o huomo://cliente
-            // Reemplazamos el protocolo personalizado por https:// para usar el parser estándar URL
-            const normalizedUrl = urlStr.startsWith('huomo://')
-              ? urlStr.replace('huomo://', 'https://app.huomo.barber/')
-              : urlStr.startsWith('com.huomo.barber://')
-              ? urlStr.replace('com.huomo.barber://', 'https://app.huomo.barber/')
-              : urlStr;
-
-            const parsed = new URL(normalizedUrl);
-            const path = parsed.pathname; // ej: '/recuperar' o '/cliente'
-            const hash = parsed.hash.replace(/^#/, '');
-            const search = parsed.search;
-
-            // Extraer parámetros de hash o search
-            const params = new URLSearchParams(hash || search);
-            const accessToken = params.get('access_token');
-            const refreshToken = params.get('refresh_token');
-            const code = params.get('code');
-            const error = params.get('error_description') || params.get('error');
-
-            const supabase = requireSupabaseClient();
-
-            if (accessToken && refreshToken) {
-              await supabase.auth.setSession({
-                access_token: accessToken,
-                refresh_token: refreshToken,
-              });
-            } else if (code) {
-              await supabase.auth.exchangeCodeForSession(code);
-            }
-
-            if (path.includes('recuperar')) {
-              navigate('/recuperar', { replace: true, state: { error } });
-            } else if (path.includes('cliente')) {
-              navigate('/cliente', { replace: true });
-            } else if (path && path !== '/') {
-              navigate(path, { replace: true });
-            }
-          } catch {
-            /* prevenir caídas si la URL viene malformada */
-          }
-        });
-
-        cleanup = () => {
-          void handle.remove();
-        };
-      } catch {
-        /* No soportado en este entorno */
+        const route = await acceptNativeAuthUrl(url);
+        if (!route || !active) return;
+        const { Browser } = await import('@capacitor/browser');
+        await Browser.close().catch(() => undefined);
+        if (active) navigate(route, { replace: true });
+      } catch (cause) {
+        const { Browser } = await import('@capacitor/browser');
+        await Browser.close().catch(() => undefined);
+        if (active)
+          navigate('/', {
+            replace: true,
+            state: {
+              authError: cause instanceof Error ? cause.message : 'No se pudo completar el acceso.',
+            },
+          });
       }
     }
-
-    void register();
-
+    async function register() {
+      handle = await App.addListener('appUrlOpen', event => {
+        void receive(event.url);
+      });
+      if (!active) {
+        await handle.remove();
+        return;
+      }
+      const launch = await App.getLaunchUrl();
+      if (launch?.url) await receive(launch.url);
+    }
+    void register().catch(() => {
+      if (active)
+        navigate('/', {
+          replace: true,
+          state: { authError: 'No se pudo preparar el acceso móvil. Cerrá y volvé a abrir Huomo.' },
+        });
+    });
     return () => {
-      if (cleanup) cleanup();
+      active = false;
+      void handle?.remove();
     };
   }, [navigate]);
 }

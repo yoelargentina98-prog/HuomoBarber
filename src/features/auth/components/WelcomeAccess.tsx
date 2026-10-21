@@ -1,5 +1,7 @@
 import { useState, type FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { GoogleAccessButton } from './GoogleAccessButton';
+import { signInWithGoogle } from '../services/google-sign-in';
 import {
   signInUnified,
   signUpClient,
@@ -11,10 +13,25 @@ type AuthTab = 'login' | 'register' | 'recovery';
 
 export function WelcomeAccess() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [tab, setTab] = useState<AuthTab>('login');
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string>(() => location.state?.authError ?? '');
   const [successMsg, setSuccessMsg] = useState('');
+
+  async function handleGoogle() {
+    if (busy) return;
+    setBusy(true);
+    setError('');
+    setSuccessMsg('');
+    try {
+      await signInWithGoogle();
+    } catch {
+      setError('No se pudo iniciar el acceso con Google. Revisá tu conexión y reintentá.');
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -186,6 +203,7 @@ export function WelcomeAccess() {
                 <h2>Bienvenido</h2>
                 <p>Ingresá con tu cuenta para acceder a tu portal.</p>
               </div>
+              <GoogleAccessButton busy={busy} onClick={() => void handleGoogle()} />
               <form className="welcome-form" onSubmit={handleLogin}>
                 <label>
                   Usuario o email
@@ -239,6 +257,7 @@ export function WelcomeAccess() {
                 <h2>Crear cuenta</h2>
                 <p>Completá tus datos para reservar turnos online en Huomo.</p>
               </div>
+              <GoogleAccessButton busy={busy} onClick={() => void handleGoogle()} />
               <form className="welcome-form" onSubmit={handleRegister} noValidate>
                 <label>
                   Nombre y apellido
