@@ -2,17 +2,18 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { WelcomeAccess } from '../features/auth/components/WelcomeAccess';
-import { signInUnified } from '../features/staff/services/admin-session';
+import { getCurrentUserProfile, signInUnified } from '../features/staff/services/admin-session';
 import { signInWithGoogle } from '../features/auth/services/google-sign-in';
 
 vi.mock('../features/auth/services/google-sign-in', () => ({ signInWithGoogle: vi.fn() }));
 
 const mockNavigate = vi.fn();
+const mockLocation = vi.hoisted(() => ({ state: null, search: '' }));
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
   return {
     ...actual,
-    useLocation: () => ({ state: null }),
+    useLocation: () => mockLocation,
     useNavigate: () => mockNavigate,
   };
 });
@@ -21,11 +22,22 @@ vi.mock('../features/staff/services/admin-session', () => ({
   signInUnified: vi.fn(),
   signUpClient: vi.fn(),
   requestPasswordReset: vi.fn(),
+  getCurrentUserProfile: vi.fn(),
 }));
 
 describe('Acceso unificado para los 4 roles (WelcomeAccess)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockLocation.search = '';
+  });
+
+  it('completa el retorno de Google a la raíz usando el rol del servidor', async () => {
+    mockLocation.search = '?code=callback-code';
+    vi.mocked(getCurrentUserProfile).mockResolvedValue({ role: 'client' } as NonNullable<
+      Awaited<ReturnType<typeof getCurrentUserProfile>>
+    >);
+    render(<WelcomeAccess />);
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/cliente', { replace: true }));
   });
 
   it('ofrece el mismo ingreso Google en login y registro', async () => {

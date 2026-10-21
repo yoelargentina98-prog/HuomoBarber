@@ -50,6 +50,7 @@ export interface PublicBarber {
 }
 
 export interface ClientProfile {
+  customerNumber?: string | null;
   id: string;
   email: string;
   fullName: string;

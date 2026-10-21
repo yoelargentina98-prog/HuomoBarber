@@ -29,6 +29,7 @@ export async function saleOptions(branch: string): Promise<SaleOption[]> {
   return data ?? [];
 }
 export type SaleInput = {
+  customerNumber?: string;
   branch: string;
   employee: string;
   service: string;
@@ -59,6 +60,7 @@ export async function registerSale(input: SaleInput, request: string): Promise<v
     operation_id: request,
     payment_reference: input.reference,
     sale_notes: input.notes,
+    target_client_number: input.customerNumber ?? '',
   });
   if (error) throw new Error(error.message);
 }

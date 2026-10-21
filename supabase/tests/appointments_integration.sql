@@ -54,7 +54,7 @@ BEGIN
  result:=public.complete_appointment_service(past,'transfer','QA reference','',operation);
  retry:=public.complete_appointment_service(past,'transfer','QA reference','',operation);
  IF result<>retry OR (SELECT count(*) FROM public.employee_services WHERE appointment_id=past)<>1 OR (SELECT count(*) FROM public.cash_payments WHERE request_id=operation)<>1 THEN RAISE EXCEPTION 'Duplicate completion/payment'; END IF;
- IF NOT EXISTS(SELECT 1 FROM public.employee_services WHERE appointment_id=past AND category='cut' AND commission_cents=600000) THEN RAISE EXCEPTION 'Wrong commission/category'; END IF;
+ IF NOT EXISTS(SELECT 1 FROM public.employee_services WHERE appointment_id=past AND client_id=customer AND customer_number=(SELECT customer_number FROM public.profiles WHERE id=customer) AND category='cut' AND commission_cents=600000) THEN RAISE EXCEPTION 'Wrong commission/category'; END IF;
  PERFORM public.save_booking_settings(0,30,0,1);
  PERFORM set_config('request.jwt.claim.sub',customer::text,true);
  booked:=public.book_appointment(branch,service,barber,(day_date+time '10:00') AT TIME ZONE 'America/Argentina/Buenos_Aires','QA customer','','','');

@@ -140,7 +140,7 @@ export async function getCurrentUserProfile(): Promise<ClientProfile | null> {
 
   const { data, error } = await client
     .from('profiles')
-    .select('id, role, full_name, phone')
+    .select('id, role, full_name, phone, customer_number')
     .eq('id', session.user.id)
     .single();
 
@@ -153,6 +153,7 @@ export async function getCurrentUserProfile(): Promise<ClientProfile | null> {
     email: session.user.email ?? '',
     fullName: data.full_name ?? '',
     phone: data.phone ?? '',
+    customerNumber: data.customer_number,
     role: data.role ?? 'client',
   };
 }

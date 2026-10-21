@@ -1,3 +1,6 @@
+import { MemberCard } from '../../club/MemberCard';
+import { useOutletContext } from 'react-router-dom';
+import type { ClientProfile } from '../../appointments/model/types';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getClientAppointments } from '../../appointments/services/appointments-service';
@@ -5,6 +8,7 @@ import type { Appointment } from '../../appointments/model/types';
 import { formatCurrency } from '../../../shared/utils/currency';
 
 export function ClientHomePage() {
+  const { profile } = useOutletContext<{ profile: ClientProfile | null }>();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -40,6 +44,7 @@ export function ClientHomePage() {
         <p>Gestioná tus turnos, reservá un nuevo horario y encontrá tu estilo en Huomo.</p>
       </section>
 
+      <MemberCard number={profile?.customerNumber} />
       {/* Acceso destacado a reservar */}
       <section className="client-cta-card">
         <div className="client-cta-content">

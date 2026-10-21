@@ -1,3 +1,6 @@
+import { MemberCard } from '../../club/MemberCard';
+import { ClubHistoryPanel } from '../../club/ClubHistoryPanel';
+import '../../club/club.css';
 import { useEffect, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -98,6 +101,8 @@ export function ClientProfilePage() {
         </p>
       </div>
 
+      <MemberCard number={profile?.customerNumber} />
+      <ClubHistoryPanel />
       {error && (
         <div className="welcome-alert-error" role="alert" style={{ marginBottom: '1.5rem' }}>
           {error}

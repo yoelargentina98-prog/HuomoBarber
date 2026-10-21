@@ -111,3 +111,15 @@ Tras activar, comprobar en un entorno de prueba:
 Referencias oficiales: [createUser](https://supabase.com/docs/reference/javascript/auth-admin-createuser),
 [seguridad de funciones](https://supabase.com/docs/guides/functions/auth) y
 [gestión de perfiles](https://supabase.com/docs/guides/auth/managing-user-data).
+
+## Corrección de altas después del registro público de clientes
+
+Se aplicó al proyecto remoto la migración `20261021030300_staff_role_server_access.sql`. El trigger `prevent_role_self_elevation` desplegado conservaba una versión SECURITY DEFINER antigua que rechazaba la actualización realizada por la Edge Function con service_role: Auth ya había creado un perfil cliente y el UPSERT intentaba convertirlo en empleado.
+
+La función ahora usa SECURITY INVOKER y search_path vacío para identificar al rol SQL real. Permite al servidor service_role crear el perfil interno y conserva el bloqueo de autoasignación de roles e identidad. No se cambiaron políticas RLS, contraseñas ni cuentas existentes. No requiere recompilar el APK ni desplegar nuevamente create-staff.
+
+Se reprodujo primero el rechazo en PostgreSQL y luego se ejecutó `supabase/tests/staff_client_profile_promotion.sql` contra la base remota: el alta pública ignoró metadata role=admin, el UPSERT del servidor creó un barbero con ficha/sucursal, permitió recepción y rechazó la autoelevación a administrador. Todo el test finaliza con ROLLBACK. Aplicación por SQL Management API; no reejecutar db push sin reconciliar el historial.
+
+## Reinicio de datos solicitado por el propietario — 21/10/2026
+
+Se ejecutó `supabase/clean_database.sql` sobre HuomoBarber, conservando únicamente la cuenta y perfil `admin@huomobarber.com.ar`. Se eliminaron los demás usuarios y todos los datos operativos, incluidas sucursales, catálogo, turnos, servicios realizados, pagos, gastos, remuneraciones y horarios. La transacción verificó que todas las tablas públicas estuvieran vacías salvo el perfil administrador y las reglas predeterminadas de reservas. Resultado: Auth=1, perfiles=1, sucursales=0, turnos=0, servicios realizados=0, pagos=0. No se modificó la contraseña del administrador ni la configuración de Google. Este script es destructivo y de ejecución manual; no es una migración automática.

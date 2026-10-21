@@ -112,3 +112,7 @@ una cuenta existente y un perfil con rol admin. Nunca colocar claves secretas en
 
 El código local no implica que migraciones o funciones estén desplegadas en el proyecto remoto.
 
+
+### HuomoClub
+
+Número de cliente automático por teléfono o cinco dígitos, vinculación opcional al registrar ventas e historial de servicios: [documentación](docs/huomo-club.md).

@@ -1,3 +1,6 @@
+import { CustomerSelector } from '../../club/CustomerSelector';
+import type { ClubClient } from '../../club/service';
+import '../../club/club.css';
 import { useRef, useState } from 'react';
 import { SaveForm } from '../../../shared/components/SaveForm';
 import { field } from '../../../shared/lib/form';
@@ -13,6 +16,8 @@ export function SaleFields({
   options: SaleOption[];
   onSaved: () => void;
 }) {
+  const [customerNumber, setCustomerNumber] = useState('');
+  const [customer, setCustomer] = useState<ClubClient | null>(null);
   const [employee, setEmployee] = useState('');
   const [service, setService] = useState('');
   const [request] = useState(() => crypto.randomUUID());
@@ -31,9 +36,14 @@ export function SaleFields({
       save={async data => {
         if (complete) return;
         if (!selected) throw new Error('Seleccioná un barbero y un servicio habilitado.');
+        if (customerNumber && customer?.customer_number !== customerNumber)
+          throw new Error(
+            'Verificá el número de cliente antes de guardar o dejalo vacío para cliente ocasional.'
+          );
         setAttempted(true);
         snapshot.current ??= {
           branch,
+          customerNumber: customer?.customer_number,
           employee,
           service,
           method: field(data, 'method'),
@@ -45,6 +55,12 @@ export function SaleFields({
         setComplete(true);
       }}
     >
+      <CustomerSelector
+        branch={branch}
+        disabled={attempted}
+        onSelect={setCustomer}
+        onNumberChange={setCustomerNumber}
+      />
       <fieldset className="form-wide" disabled={attempted}>
         <label>
           Barbero

@@ -1,93 +1,58 @@
--- ============================================================================
--- Script: supabase/clean_database.sql
--- Propósito:
---   Limpiar toda la base de datos de Huomo EXCEPTO:
---     1. El usuario Administrador (admin@huomobarber.com.ar en auth.users y public.profiles).
---     2. Las sucursales existentes en public.branches (se preservan intactas).
---
--- Borra:
---   - Todos los barberos y recepcionistas (auth.users, profiles, employee_details).
---   - Todos los servicios y catálogo (service_catalog, branch_services, barber_services).
---   - Todas las ventas, pagos y cobros de caja (cash_payments).
---   - Todos los gastos de sucursales (branch_expenses, branch_expense_audit).
---   - Todos los horarios de barberos (barber_schedules).
---   - Todo el historial laboral (employee_services, compensation, adjustments, audit).
--- ============================================================================
-
+-- Destructive reset. Run explicitly, never as a deployment migration.
+-- Keeps only admin@huomobarber.com.ar; removes branches too.
+-- Preserves schema, permissions, Auth providers and default booking rules.
 BEGIN;
-
--- 1. Verificación preventiva de seguridad: El usuario administrador DEBE existir
-DO $$
-DECLARE
-  v_admin_id uuid;
-BEGIN
-  SELECT id INTO v_admin_id FROM auth.users WHERE email = 'admin@huomobarber.com.ar';
-  IF v_admin_id IS NULL THEN
-    RAISE EXCEPTION 'OPERACIÓN ABORTADA: No se encontró al usuario admin@huomobarber.com.ar. No se realizó ningún cambio.';
-  END IF;
-  RAISE NOTICE 'Administrador verificado correctamente (ID: %). Iniciando limpieza...', v_admin_id;
+SET LOCAL lock_timeout = '10s';
+DO $$ BEGIN
+ IF NOT EXISTS(SELECT 1 FROM auth.users u JOIN public.profiles p ON p.id=u.id
+   WHERE u.id='66e60c75-6e47-4213-8740-cf22c7cfb51e'
+   AND u.email='admin@huomobarber.com.ar' AND p.role='admin') THEN
+  RAISE EXCEPTION 'Administrator identity was not verified. Reset aborted.';
+ END IF;
 END $$;
 
--- 2. Limpieza de tablas financieras y transaccionales
-TRUNCATE TABLE public.cash_payments CASCADE;
-TRUNCATE TABLE public.branch_expense_audit CASCADE;
-TRUNCATE TABLE public.branch_expenses CASCADE;
+-- Explicit table set, no CASCADE: unexpected dependencies abort the transaction.
+TRUNCATE TABLE
+ public.appointments, public.barber_schedules, public.barber_services,
+ public.booking_blocks, public.booking_settings,
+ public.branch_expense_audit, public.branch_expenses, public.branch_schedules,
+ public.branch_services, public.cash_payments, public.employee_adjustments,
+ public.employee_audit, public.employee_compensation, public.employee_details,
+ public.employee_services, public.service_catalog
+ RESTART IDENTITY;
 
--- 3. Limpieza de catálogo de servicios y asignaciones
-TRUNCATE TABLE public.barber_services CASCADE;
-TRUNCATE TABLE public.branch_services CASCADE;
-TRUNCATE TABLE public.service_catalog CASCADE;
+DELETE FROM public.profiles WHERE id <> '66e60c75-6e47-4213-8740-cf22c7cfb51e';
+UPDATE public.profiles SET branch_id=NULL
+ WHERE id='66e60c75-6e47-4213-8740-cf22c7cfb51e' AND branch_id IS NOT NULL;
+DELETE FROM public.branches;
+-- Refresh tokens use a text user_id rather than a user foreign key.
+DELETE FROM auth.refresh_tokens WHERE user_id IS DISTINCT FROM '66e60c75-6e47-4213-8740-cf22c7cfb51e';
+-- Identities, sessions and MFA for removed users cascade from Auth.
+DELETE FROM auth.users WHERE id <> '66e60c75-6e47-4213-8740-cf22c7cfb51e';
+INSERT INTO public.booking_settings(id) VALUES(true);
 
--- 4. Limpieza de registros laborales y horarios
-TRUNCATE TABLE public.barber_schedules CASCADE;
-TRUNCATE TABLE public.employee_adjustments CASCADE;
-TRUNCATE TABLE public.employee_services CASCADE;
-TRUNCATE TABLE public.employee_compensation CASCADE;
-TRUNCATE TABLE public.employee_audit CASCADE;
-TRUNCATE TABLE public.employee_details CASCADE;
-
--- 5. Eliminar perfiles que no sean del administrador
-DELETE FROM public.profiles
-WHERE id NOT IN (
-  SELECT id FROM auth.users WHERE email = 'admin@huomobarber.com.ar'
-);
-
--- 6. Eliminar usuarios de Auth que no sean el administrador
-DELETE FROM auth.users
-WHERE email != 'admin@huomobarber.com.ar';
-
--- 7. Asegurar que el perfil del administrador conserve el rol 'admin'
-UPDATE public.profiles
-SET role = 'admin'::public.app_role,
-    updated_at = now()
-WHERE id IN (
-  SELECT id FROM auth.users WHERE email = 'admin@huomobarber.com.ar'
-);
-
+DO $$
+DECLARE relation_name text; remaining bigint;
+BEGIN
+ IF (SELECT count(*) FROM auth.users) <> 1 OR (SELECT count(*) FROM public.profiles) <> 1 THEN
+  RAISE EXCEPTION 'Unexpected accounts remain. Reset aborted.';
+ END IF;
+ FOR relation_name IN SELECT table_name FROM information_schema.tables
+  WHERE table_schema='public' AND table_type='BASE TABLE'
+  AND table_name NOT IN ('profiles','booking_settings') LOOP
+  EXECUTE format('SELECT count(*) FROM public.%I',relation_name) INTO remaining;
+  IF remaining <> 0 THEN RAISE EXCEPTION 'Unexpected data in %. Reset aborted.',relation_name; END IF;
+ END LOOP;
+ IF NOT EXISTS(SELECT 1 FROM public.profiles p JOIN auth.users u ON u.id=p.id
+  WHERE p.id='66e60c75-6e47-4213-8740-cf22c7cfb51e' AND p.role='admin' AND u.email='admin@huomobarber.com.ar') THEN
+  RAISE EXCEPTION 'Administrator verification failed. Reset aborted.';
+ END IF;
+END $$;
 COMMIT;
 
--- ============================================================================
--- Consultas de verificación posterior (deben ejecutarse para comprobar el estado)
--- ============================================================================
-
--- A. Verificar que el administrador sigue existiendo
-SELECT 
-  p.id,
-  u.email,
-  p.role,
-  p.full_name
-FROM public.profiles p
-JOIN auth.users u ON u.id = p.id;
-
--- B. Verificar que las sucursales siguen intactas
-SELECT id, name, active, created_at FROM public.branches;
-
--- C. Verificar que todo lo demás está en 0
-SELECT 
-  (SELECT count(*) FROM public.service_catalog) AS total_servicios,
-  (SELECT count(*) FROM public.employee_details) AS total_empleados_ficha,
-  (SELECT count(*) FROM public.cash_payments) AS total_pagos_caja,
-  (SELECT count(*) FROM public.branch_expenses) AS total_gastos,
-  (SELECT count(*) FROM public.barber_schedules) AS total_horarios,
-  (SELECT count(*) FROM public.profiles WHERE role != 'admin') AS otros_perfiles,
-  (SELECT count(*) FROM auth.users WHERE email != 'admin@huomobarber.com.ar') AS otros_usuarios_auth;
+SELECT (SELECT count(*) FROM auth.users) AS auth_users,
+ (SELECT count(*) FROM public.profiles) AS profiles,
+ (SELECT count(*) FROM public.branches) AS branches,
+ (SELECT count(*) FROM public.appointments) AS appointments,
+ (SELECT count(*) FROM public.employee_services) AS services,
+ (SELECT count(*) FROM public.cash_payments) AS payments;

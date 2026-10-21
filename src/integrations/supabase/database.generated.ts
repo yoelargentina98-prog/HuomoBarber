@@ -734,9 +734,11 @@ export type Database = {
           branch_id: string | null;
           branch_name: string | null;
           category: string;
+          client_id: string | null;
           commission_cents: number | null;
           commission_percent: number;
           created_at: string;
+          customer_number: string | null;
           employee_id: string;
           id: string;
           notes: string;
@@ -753,9 +755,11 @@ export type Database = {
           branch_id?: string | null;
           branch_name?: string | null;
           category: string;
+          client_id?: string | null;
           commission_cents?: number | null;
           commission_percent: number;
           created_at?: string;
+          customer_number?: string | null;
           employee_id: string;
           id?: string;
           notes?: string;
@@ -772,9 +776,11 @@ export type Database = {
           branch_id?: string | null;
           branch_name?: string | null;
           category?: string;
+          client_id?: string | null;
           commission_cents?: number | null;
           commission_percent?: number;
           created_at?: string;
+          customer_number?: string | null;
           employee_id?: string;
           id?: string;
           notes?: string;
@@ -801,6 +807,13 @@ export type Database = {
             referencedColumns: ['id'];
           },
           {
+            foreignKeyName: 'employee_services_client_id_fkey';
+            columns: ['client_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
             foreignKeyName: 'employee_services_employee_id_fkey';
             columns: ['employee_id'];
             isOneToOne: false;
@@ -820,6 +833,7 @@ export type Database = {
         Row: {
           branch_id: string | null;
           created_at: string;
+          customer_number: string | null;
           full_name: string | null;
           id: string;
           phone: string | null;
@@ -830,6 +844,7 @@ export type Database = {
         Insert: {
           branch_id?: string | null;
           created_at?: string;
+          customer_number?: string | null;
           full_name?: string | null;
           id: string;
           phone?: string | null;
@@ -840,6 +855,7 @@ export type Database = {
         Update: {
           branch_id?: string | null;
           created_at?: string;
+          customer_number?: string | null;
           full_name?: string | null;
           id?: string;
           phone?: string | null;
@@ -1088,6 +1104,14 @@ export type Database = {
         }[];
       };
       get_cash_sale_setup: { Args: { target_branch: string }; Returns: Json };
+      get_club_history: {
+        Args: {
+          page_number?: number;
+          target_branch?: string;
+          target_client?: string;
+        };
+        Returns: Json;
+      };
       get_employee_month_summary: {
         Args: { month_start: string; target_employee: string };
         Returns: Json;
@@ -1150,6 +1174,14 @@ export type Database = {
       };
       is_active_booking_barber: { Args: never; Returns: boolean };
       is_admin: { Args: never; Returns: boolean };
+      lookup_club_client: {
+        Args: { client_number: string; target_branch: string };
+        Returns: {
+          customer_number: string;
+          full_name: string;
+          id: string;
+        }[];
+      };
       mark_appointment_attendance: {
         Args: { attendance: string; target_appointment: string };
         Returns: undefined;
@@ -1199,6 +1231,20 @@ export type Database = {
         Returns: string;
       };
       register_cash_sale: {
+        Args: {
+          catalog_service: string;
+          expected_cents: number;
+          operation_id: string;
+          payment_method: string;
+          payment_reference?: string;
+          sale_notes?: string;
+          target_branch: string;
+          target_client_number?: string;
+          target_employee: string;
+        };
+        Returns: string;
+      };
+      register_cash_sale_without_client: {
         Args: {
           catalog_service: string;
           expected_cents: number;

@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { GoogleAccessButton } from './GoogleAccessButton';
 import { signInWithGoogle } from '../services/google-sign-in';
@@ -6,6 +6,7 @@ import {
   signInUnified,
   signUpClient,
   requestPasswordReset,
+  getCurrentUserProfile,
 } from '../../staff/services/admin-session';
 import '../auth.css';
 
@@ -18,6 +19,41 @@ export function WelcomeAccess() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>(() => location.state?.authError ?? '');
   const [successMsg, setSuccessMsg] = useState('');
+
+  // Supabase can return to Site URL when a provider starts without redirectTo.
+  // Initializing the client consumes the PKCE callback before resolving the role.
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (!params.has('code') && !params.has('error')) return;
+    let active = true;
+    async function finishAccess() {
+      try {
+        if (params.has('error')) throw new Error('El acceso con Google fue cancelado.');
+        const profile = await getCurrentUserProfile();
+        if (!profile) throw new Error('No se pudo validar el acceso. Volvé a ingresar con Google.');
+        if (active)
+          navigate(
+            profile.role === 'admin'
+              ? '/admin'
+              : profile.role === 'barber'
+                ? '/barbero'
+                : profile.role === 'reception'
+                  ? '/recepcion'
+                  : '/cliente',
+            { replace: true }
+          );
+      } catch {
+        if (active) {
+          setError('No se pudo completar el acceso con Google. Volvé a intentarlo.');
+          navigate('/', { replace: true });
+        }
+      }
+    }
+    void finishAccess();
+    return () => {
+      active = false;
+    };
+  }, [location.search, navigate]);
 
   async function handleGoogle() {
     if (busy) return;
@@ -282,14 +318,8 @@ export function WelcomeAccess() {
                 </label>
 
                 <label>
-                  Teléfono de contacto
-                  <input
-                    name="phone"
-                    type="tel"
-                    autoComplete="tel"
-                    required
-                    placeholder="11 1234-5678"
-                  />
+                  Teléfono de contacto (opcional)
+                  <input name="phone" type="tel" autoComplete="tel" placeholder="11 1234-5678" />
                 </label>
 
                 <label>

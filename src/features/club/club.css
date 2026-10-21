@@ -1,0 +1,39 @@
+.club-selector {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid #dce0d4;
+  border-radius: 10px;
+}
+.club-selector button {
+  margin-top: 12px;
+}
+.club-number,
+.club-history {
+  min-width: 0;
+  padding: 20px;
+  margin-block: 20px;
+  border: 1px solid #dce0d4;
+  border-radius: 12px;
+  background: #fff;
+  color: #203729;
+  overflow-wrap: anywhere;
+}
+.club-number strong {
+  display: block;
+  font-size: clamp(24px, 6vw, 36px);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+.club-history__rows {
+  padding: 0;
+  list-style: none;
+}
+.club-history__rows li {
+  display: grid;
+  gap: 6px;
+  padding-block: 14px;
+  border-top: 1px solid #dce0d4;
+}
+.club-history h2 {
+  color: #203729;
+}

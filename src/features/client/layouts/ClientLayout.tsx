@@ -102,7 +102,7 @@ export function ClientLayout() {
           <span className="client-brand-word">
             HUOMO<span>®</span>
           </span>
-          <span className="client-brand-badge">Cliente</span>
+          <span className="client-brand-badge">HuomoClub</span>
         </NavLink>
 
         <nav className="client-nav" aria-label="Portal de Clientes">
