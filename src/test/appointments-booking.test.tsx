@@ -7,7 +7,6 @@ import {
   getBookingSettings,
   saveBookingSettings,
   completeAppointmentService,
-  DEFAULT_BOOKING_SETTINGS,
 } from '../features/appointments/services/appointments-service';
 import { requireSupabaseClient } from '../integrations/supabase/client';
 
@@ -33,16 +32,13 @@ describe('Servicio de turnos, reglas y atomicidad (appointments-service)', () =>
     } as unknown as ReturnType<typeof requireSupabaseClient>);
   });
 
-  it('obtiene las reglas de reserva por defecto si no existen en base de datos', async () => {
+  it('informa el fallo al cargar reglas sin inventar valores', async () => {
     const mockSingle = vi.fn().mockResolvedValueOnce({ data: null, error: new Error('not found') });
     const mockEq = vi.fn().mockReturnValue({ single: mockSingle });
     const mockSelect = vi.fn().mockReturnValue({ eq: mockEq });
     mockFrom.mockReturnValue({ select: mockSelect });
 
-    const settings = await getBookingSettings();
-    expect(settings).toEqual(DEFAULT_BOOKING_SETTINGS);
-    expect(settings.minAdvanceHours).toBe(2);
-    expect(settings.maxActivePerClient).toBe(3);
+    await expect(getBookingSettings()).rejects.toThrow('No se pudo cargar');
   });
 
   it('guarda las reglas de reserva llamando al RPC correspondiente', async () => {
@@ -242,7 +238,7 @@ describe('Servicio de turnos, reglas y atomicidad (appointments-service)', () =>
       p_payment_method: 'cash',
       p_payment_reference: '',
       p_sale_notes: '',
-      p_operation_id: null,
+      p_operation_id: undefined,
     });
     expect(result.appointmentId).toBe('appt-999');
     expect(result.serviceId).toBe('srv-101');

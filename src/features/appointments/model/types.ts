@@ -34,6 +34,7 @@ export interface Appointment {
   endsAt: string;
   status: AppointmentStatus;
   notes: string;
+  arrivedAt?: string | null;
   cancellationReason?: string | null;
   cancelledAt?: string | null;
   cancelledBy?: string | null;

@@ -1,121 +1,62 @@
-# Acceso Unificado, Portal del Cliente y Reservas — Huomo
+# Acceso unificado, reservas y agenda
 
-Documento de auditoría, arquitectura, modelo de datos y flujos para el sprint de reservas y acceso unificado.
+Estado verificado: 21 de octubre de 2026. Implementación local corregida y migraciones aplicadas al proyecto Supabase HuomoBarber (`dnzvuwzpsfqduqdmfnmi`). No se realizó despliegue del frontend ni push.
 
----
+## Acceso y permisos
 
-## 1. Auditoría del Estado Existente y Decisiones Técnicas
+El login identifica el rol desde `profiles` y dirige a `/admin`, `/recepcion`, `/barbero` o `/cliente`. Si no puede consultar el perfil, informa el error: no supone que la persona es cliente. El registro público crea solamente clientes aunque el metadata solicite otro rol. Los usuarios internos se crean desde administración. Un usuario no administrador no puede reasignarse sucursal ni elevar su rol.
 
-### 1.1 Autenticación y Normalización de Identidad
+Recepción opera solamente dentro de su sucursal activa. El barbero consulta solamente sus turnos. El cliente consulta y modifica solamente sus reservas. Estas restricciones existen en PostgreSQL y RLS, además de las pantallas.
 
-- **Situación previa**: El sistema contaba con tres roles (`admin`, `reception`, `barber`) y una pantalla de acceso en `/admin` pensada originalmente para empleados internos. Los nombres de usuario se normalizaban internamente a `@staff.huomo.invalid` mediante `loginEmail()`.
-- **Decisión de diseño**:
-  - Incorporar el valor `'client'` al tipo enumerado `public.app_role`.
-  - Mantener la función `loginEmail()`: si la entrada contiene `@` (como en correos de clientes y del administrador), se respeta intacta; si es un nombre de usuario plano de empleado, se completa el dominio interno.
-  - La pantalla principal `/` se convierte en la bienvenida oficial con:
-    1. **Iniciar sesión**: Formulario único para los 4 roles (sin selector manual de rol). Tras autenticar con Supabase Auth, se consulta `public.profiles.role` y se redirige automáticamente al portal correspondiente (`/admin`, `/recepcion`, `/barbero`, `/cliente`).
-    2. **Crear cuenta**: Formulario público exclusivo para clientes. Requiere nombre completo, email, teléfono, contraseña y confirmación de contraseña.
-    3. **Recuperación de acceso**: Flujo de restablecimiento de contraseña vía Supabase Auth.
-- **Garantía de Privilegios**:
-  - Ningún usuario puede autoasignarse roles privilegiados.
-  - Un trigger en `auth.users` (`tr_on_auth_user_created`) asigna exclusivamente `role = 'client'::public.app_role` en `public.profiles`.
-  - La regla estricta `prevent_role_self_elevation()` en `public.profiles` rechaza cualquier modificación de rol por parte de usuarios no administradores.
+## Disponibilidad
 
----
+Para habilitar reservas, configurar **Sucursales → ingresar a la sucursal → horarios de apertura**, además del horario del barbero, servicios habilitados y precios de esa sucursal mayores a cero. No se inventaron horarios para Irigoyen ni Mosconi.
 
-## 2. Modelo de Datos de Turnos y Reglas
+La disponibilidad cruza horarios y excepciones de sucursal y barbero, duración del servicio, turnos existentes y bloqueos. Los bloqueos pueden abarcar toda la sucursal o un barbero y se administran desde la ficha de sucursal. Un bloqueo que cruza un turno confirmado exige reprogramar o cancelar ese turno primero. Los horarios usan Argentina.
 
-### 2.1 Enumerado de Estados
+También el personal debe respetar la disponibilidad. Las reservas manuales guardan `created_by` como operador y `client_id = NULL`: el operador no queda registrado como consumidor. Una reprogramación conserva precio y duración históricos y se revierte completa si el destino deja de estar libre.
 
-```sql
-CREATE TYPE public.appointment_status AS ENUM ('confirmed', 'completed', 'cancelled', 'no_show');
-```
+## Atención y caja
 
-Transiciones permitidas:
+Una reserva no genera ingreso ni comisión hasta registrar la atención. El diálogo compartido de administración y recepción exige elegir efectivo o transferencia; admite referencia y notas. Guarda el servicio con su categoría real, comisión y cobro en una transacción. Impide completar turnos futuros.
 
-- `confirmed` -> `completed`: Cuando el cliente fue atendido (ejecutado por recepción o administración al vincular el servicio con Caja).
-- `confirmed` -> `cancelled`: Por el cliente (si respeta el límite de anticipación de cancelación) o por recepción/administración (con motivo).
-- `confirmed` -> `no_show`: Marcado por recepción o administración si el cliente no se presentó.
+La operación usa un identificador de idempotencia. Reintentar el mismo cobro devuelve el resultado original; cambiar el contenido de un reintento se rechaza. No duplica servicio, comisión ni recibo. Un registro anulado tampoco se reutiliza como cobro válido.
 
-### 2.2 Tabla `public.appointments`
+La agenda permite registrar llegada del cliente el mismo día y ausencia después del fin del turno, siempre con autorización de sucursal. Las agendas del administrador, recepción y barbero tienen páginas de 20 filas; cambiar filtros reinicia la página. La agenda del barbero se ordena cronológicamente.
 
-- `id`: UUID clave primaria.
-- `client_id`: UUID referencia opcional a `public.profiles(id)` (NULL en reservas manuales de clientes sin cuenta de usuario).
-- `client_name`: Nombre del cliente (obligatorio, 2 a 100 caracteres).
-- `client_phone`: Teléfono de contacto.
-- `client_email`: Email de contacto.
-- `branch_id`: UUID referencia a `public.branches(id)`.
-- `barber_id`: UUID referencia al barbero `public.profiles(id)`.
-- `service_id`: UUID referencia al catálogo `public.service_catalog(id)`.
-- `starts_at` / `ends_at`: Instantes con zona horaria (`timestamptz`).
-- `status`: Estado del turno (`confirmed`, `completed`, `cancelled`, `no_show`).
-- **Instantáneas históricas (Snapshots)**:
-  - `branch_name`: Nombre de la sucursal al momento de la reserva.
-  - `barber_name`: Nombre del barbero al momento de la reserva.
-  - `service_name`: Nombre del servicio al momento de la reserva.
-  - `price_cents`: Tarifa acordada en centavos (bigint).
-  - `duration_minutes`: Duración en minutos del servicio.
-- **Trazabilidad**:
-  - `notes`: Notas adicionales de la reserva.
-  - `cancellation_reason`: Motivo en caso de anulación.
-  - `cancelled_at` / `cancelled_by`: Fecha y autor de la anulación.
-  - `created_by`: Usuario que originó el registro (el propio cliente o staff).
-  - `created_at` / `updated_at`: Marcas de tiempo auditadas.
+## Recuperación y confirmación de cuenta
 
-### 2.3 Prevención Atómica de Superposiciones (PostgreSQL)
+`/recuperar` verifica sesión, solicita nueva contraseña y confirmación, actualiza mediante Supabase Auth y cierra la sesión para un ingreso explícito. Maneja enlaces vencidos y errores. El registro envía confirmación a `/cliente`.
 
-Para evitar que dos clientes o recepcionistas reserven el mismo horario del mismo barbero simultáneamente:
+En Supabase se agregaron exactamente estas URLs a la lista de redirecciones permitidas, conservando el resto de la configuración y la confirmación de email:
 
-1. **Restricción de Exclusión a nivel de motor (PostgreSQL Range Exclusion Constraint)**:
-   ```sql
-   ALTER TABLE public.appointments ADD CONSTRAINT no_overlapping_confirmed_appointments
-   EXCLUDE USING gist (barber_id WITH =, tstzrange(starts_at, ends_at) WITH &&)
-   WHERE (status = 'confirmed');
-   ```
-2. **Bloqueo Consultivo Transaccional (Advisory Lock)** en los procedimientos de reserva y reprogramación (`book_appointment` y `reschedule_appointment`) para serializar solicitudes concurrentes sobre el mismo barbero y devolver mensajes limpios y amigables.
-3. **Reprogramación atómica**: Si la validación o el nuevo horario de una reprogramación falla, la transacción de PostgreSQL aborta sin alterar el turno original.
+- `http://localhost:5173/recuperar`
+- `http://127.0.0.1:5173/recuperar`
+- `http://localhost:5173/cliente`
+- `http://127.0.0.1:5173/cliente`
 
-### 2.4 Tabla `public.booking_settings`
+Antes de publicar, agregar las mismas rutas del dominio real de producción y configurar el sitio y envío de correo de producción. No se enviaron correos ni se cambiaron contraseñas reales durante estas pruebas.
 
-Configuración centralizada editable exclusivamente por administradores:
+Referencias: [recuperación de Supabase](https://supabase.com/docs/reference/javascript/auth-resetpasswordforemail), [redirecciones de Auth](https://supabase.com/docs/guides/auth/redirect-urls).
 
-- `min_advance_hours`: Horas mínimas de anticipación requeridas para solicitar un turno (por defecto: 2 horas).
-- `max_future_days`: Ventana máxima en días hacia el futuro para reservar (por defecto: 30 días).
-- `cancel_limit_hours`: Límite de horas previas al turno para permitir cancelar o reprogramar por parte del cliente (por defecto: 2 horas).
-- `max_active_per_client`: Cantidad máxima de reservas futuras activas simultáneas por cliente (por defecto: 3).
+## Migraciones aplicadas
 
----
+En este orden:
 
-## 3. Integración con Servicios y Caja (Sin Duplicación de Trabajos)
+1. `20261021030000_appointments_and_clients.sql`: clientes, turnos, reglas, permisos, reservas y cobro.
+2. `20261021030100_booking_availability.sql`: horarios de sucursal, bloqueos, disponibilidad, reprogramación y permisos de sucursal.
+3. `20261021030200_booking_service_integrity.sql`: asistencia, cobro idempotente y directorio público habilitado.
 
-1. En `public.employee_services` se incorpora la columna opcional `appointment_id uuid REFERENCES public.appointments(id)`.
-2. Índice único parcial:
-   ```sql
-   CREATE UNIQUE INDEX employee_services_active_appointment
-   ON public.employee_services(appointment_id) WHERE voided_at IS NULL;
-   ```
-3. Cuando un cliente es atendido, Recepción o Administración registra la atención vinculada al turno:
-   - Se crea el registro oficial de servicio en `employee_services` con su comisión calculada una única vez según la regla de remuneración vigente del barbero.
-   - Si se cobra en el momento (efectivo o transferencia), se asienta el cobro en `cash_payments` mediante `register_cash_sale` o `collect_service_payment`.
-   - El turno pasa a estado `'completed'`.
-   - Si se anula el cobro en caja o el servicio, las reglas existentes preservan la auditoría sin alterar la integridad.
-   - Las ventas directas sin turno previo continúan funcionando con `appointment_id IS NULL`.
+Se ejecutaron contra el proyecto remoto con el CLI autenticado mediante SQL Management API. Este mecanismo no actualiza automáticamente el historial de `supabase migration`; no ejecutar `db push` a ciegas ni repetir la migración inicial. Antes de adoptar ese flujo, reconciliar el historial con el esquema existente.
 
----
+`src/integrations/supabase/database.generated.ts` se regeneró desde el esquema remoto. `types.ts` reexporta esos tipos; no mantener firmas RPC manuales que no coincidan con la base.
 
-## 4. Portales y Control de Acceso (RLS)
+## Verificación reproducible
 
-| Rol                | Alcance de Turnos                                           | Acciones Permitidas                                                                                                                                                                |
-| :----------------- | :---------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Cliente**        | Únicamente sus turnos (`client_id = auth.uid()`)            | Crear reservas propias, consultar historial, cancelar o reprogramar dentro del plazo permitido. Modificar sus datos de perfil (nombre, teléfono).                                  |
-| **Barbero**        | Únicamente turnos asignados a él (`barber_id = auth.uid()`) | Consultar su agenda, horario, servicio y datos de contacto indispensables del cliente. No accede a agendas de colegas ni a finanzas.                                               |
-| **Recepción**      | Exclusivamente turnos de su sucursal activa (`branch_id`)   | Consultar agenda de la sucursal, crear reservas manuales (con o sin cuenta de cliente), marcar llegada, completar servicio vinculando a Caja, registrar ausencias o cancelaciones. |
-| **Administración** | Global (todas las sucursales)                               | Visualización completa, filtrado multidimensional, reservas manuales, anulación, reprogramación y configuración de reglas de negocio (`booking_settings`).                         |
+- `npm run build`: TypeScript y compilación de producción.
+- `npm run lint`.
+- `npm run test -- --maxWorkers=2`: pruebas frontend y contratos con mocks. Estos mocks no prueban concurrencia de PostgreSQL.
+- `supabase/tests/appointments_integration.sql`: ejecutado contra PostgreSQL real dentro de una transacción con `ROLLBACK`. Prueba horarios, bloqueos, precio/duración históricos, idempotencia de cobro, categoría y comisión, separación de cliente y operador, y permisos entre roles/sucursales.
+- `python -X utf8 supabase/tests/run_appointments_concurrency.py`: ejecutado contra el proyecto remoto con dos transacciones independientes. Comprueba un único ganador para el mismo horario y preserva el límite de reservas del cliente aun con barberos distintos. Crea fixtures aislados y los elimina en `finally`; confirmó su eliminación.
 
----
-
-## 5. Experiencia Mobile y Directivas de Usabilidad
-
-- Interfaz adaptada desde 320 px de ancho sin scroll horizontal indeseado ni solapamiento de teclados.
-- Paginación estricta de 20 registros por página en todos los listados de turnos (cliente, barbero, recepción y administración).
-- Zona horaria de Argentina (`America/Argentina/Buenos_Aires`) para todas las representaciones de fechas y franjas horarias.
+Las pruebas de base pasaron. No se modificaron ventas, reservas ni horarios de negocio reales. La suite frontend previa pasó 128 pruebas y las pruebas actualizadas de reservas y recuperación pasaron 12 pruebas (incluye 4 nuevas de recuperación).

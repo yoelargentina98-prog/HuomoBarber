@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { saleOptions, saleSetup, type SaleOption, type SaleSetup } from './service';
 import { SaleFields } from './SaleFields';
 import { SaleSetupMessage } from './SaleSetupMessage';
+import { useModalRegistration } from '../../../shared/native/modal-stack';
 export function NewSale({
   branch,
   onSaved,
@@ -17,6 +18,7 @@ export function NewSale({
   onChooseBranch?: (id: string) => void;
   branchName?: string | null;
 }) {
+  useModalRegistration(true, onCancel);
   const dialog = useRef<HTMLDialogElement>(null);
   const title = useId();
   useEffect(() => {

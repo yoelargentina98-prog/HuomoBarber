@@ -1,3 +1,6 @@
+import { useNow } from '../../../shared/hooks/useNow';
+import { AppointmentCharge } from '../../appointments/components/AppointmentCharge';
+import { AttendanceActions } from '../../appointments/components/AttendanceActions';
 import { useEffect, useState } from 'react';
 import {
   getBranchAppointments,
@@ -7,7 +10,6 @@ import {
   getAvailableSlots,
   bookAppointment,
   cancelAppointment,
-  completeAppointmentService,
   getBookingSettings,
   saveBookingSettings,
 } from '../../appointments/services/appointments-service';
@@ -18,10 +20,13 @@ import type {
   BookingSlot,
   PublicBarber,
 } from '../../appointments/model/types';
+import { useModalRegistration } from '../../../shared/native/modal-stack';
 import { formatCurrency } from '../../../shared/utils/currency';
 import '../../staff/staff.css';
 
 export function AdminAppointmentsPage() {
+  const now = useNow();
+  const [charging, setCharging] = useState<Appointment | null>(null);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -44,6 +49,9 @@ export function AdminAppointmentsPage() {
     maxActivePerClient: 3,
   });
   const [savingSettings, setSavingSettings] = useState(false);
+
+  useModalRegistration(showManualModal, () => setShowManualModal(false));
+  useModalRegistration(showSettingsModal, () => setShowSettingsModal(false));
 
   // Manual booking form state
   const [manualBranch, setManualBranch] = useState('');
@@ -189,8 +197,8 @@ export function AdminAppointmentsPage() {
   }
 
   async function handleCancel(id: string) {
-    const reason =
-      window.prompt('Motivo de la cancelación del turno:') || 'Cancelado por administración';
+    const reason = window.prompt('Motivo de la cancelación del turno:');
+    if (reason === null) return;
     try {
       await cancelAppointment(id, reason);
       setRevision(r => r + 1);
@@ -199,23 +207,22 @@ export function AdminAppointmentsPage() {
     }
   }
 
-  async function handleComplete(id: string) {
-    const confirm = window.confirm('¿Marcar este turno como completado e ingresarlo en Caja?');
-    if (!confirm) return;
-    try {
-      await completeAppointmentService({
-        appointmentId: id,
-        paymentMethod: 'cash',
-        saleNotes: 'Atención completada',
-      });
-      setRevision(r => r + 1);
-    } catch (cause) {
-      alert(cause instanceof Error ? cause.message : 'No se pudo completar el turno.');
-    }
+  function handleComplete(id: string) {
+    setCharging(appointments.find(a => a.id === id) ?? null);
   }
 
   return (
     <div className="management-card">
+      {charging && (
+        <AppointmentCharge
+          appointment={charging}
+          onClose={() => setCharging(null)}
+          onSaved={() => {
+            setCharging(null);
+            setRevision(r => r + 1);
+          }}
+        />
+      )}
       <div className="section-heading">
         <div>
           <span className="eyebrow">AGENDA INTEGRAL</span>
@@ -423,28 +430,35 @@ export function AdminAppointmentsPage() {
                   </td>
                   <td>
                     {appt.status === 'confirmed' && (
-                      <div style={{ display: 'flex', gap: '0.4rem' }}>
-                        <button
-                          type="button"
-                          className="action-secondary"
-                          style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
-                          onClick={() => void handleComplete(appt.id)}
-                        >
-                          Completar
-                        </button>
-                        <button
-                          type="button"
-                          className="action-secondary"
-                          style={{
-                            padding: '0.25rem 0.5rem',
-                            fontSize: '0.75rem',
-                            color: '#f87171',
-                          }}
-                          onClick={() => void handleCancel(appt.id)}
-                        >
-                          Cancelar
-                        </button>
-                      </div>
+                      <>
+                        <AttendanceActions
+                          appointment={appt}
+                          onSaved={() => setRevision(r => r + 1)}
+                        />
+                        <div style={{ display: 'flex', gap: '0.4rem' }}>
+                          <button
+                            type="button"
+                            className="action-secondary"
+                            style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
+                            disabled={new Date(appt.startsAt).getTime() > now}
+                            onClick={() => handleComplete(appt.id)}
+                          >
+                            Completar
+                          </button>
+                          <button
+                            type="button"
+                            className="action-secondary"
+                            style={{
+                              padding: '0.25rem 0.5rem',
+                              fontSize: '0.75rem',
+                              color: '#f87171',
+                            }}
+                            onClick={() => void handleCancel(appt.id)}
+                          >
+                            Cancelar
+                          </button>
+                        </div>
+                      </>
                     )}
                   </td>
                 </tr>

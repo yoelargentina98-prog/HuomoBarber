@@ -5,6 +5,7 @@ import { BookingHomePage } from '../../features/booking/pages/BookingHomePage';
 import { NotFoundPage } from '../../features/notFound/pages/NotFoundPage';
 import { RouteFailure } from '../../shared/components/RouteFailure';
 
+import { PasswordRecovery } from '../../features/auth/components/PasswordRecovery';
 import { WelcomeAccess } from '../../features/auth/components/WelcomeAccess';
 
 export const routesConfig: RouteObject[] = [
@@ -17,6 +18,7 @@ export const routesConfig: RouteObject[] = [
         index: true,
         element: <WelcomeAccess />,
       },
+      { path: 'recuperar', element: <PasswordRecovery /> },
       {
         path: 'reservar',
         element: <PublicLayout />,

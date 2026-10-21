@@ -24,6 +24,7 @@ const service = (values: Partial<ServiceRecord>): ServiceRecord => ({
   service_name: 'Corte',
   category: 'cut',
   performed_at: '',
+  appointment_id: null,
   amount_cents: 2000000,
   commission_percent: 40,
   commission_cents: 800000,

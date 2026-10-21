@@ -2,6 +2,7 @@ import { requireSupabaseClient } from '../../../integrations/supabase/client';
 import { loginEmail } from './login-identity';
 import { cashOperator } from '../../cash/sales/service';
 import type { AppRole, ClientProfile } from '../../appointments/model/types';
+import { getAuthRedirectUrl } from '../../../shared/native/device-platform';
 
 export async function hasAdminSession(): Promise<boolean> {
   const client = requireSupabaseClient();
@@ -40,8 +41,7 @@ export async function signInUnified(identity: string, password: string): Promise
       .single();
 
     if (profileError || !profile) {
-      // Si el perfil aún no existe y el email no es de staff, es cliente
-      return 'client';
+      throw new Error('No se pudo verificar el perfil de tu cuenta. Reintentá.');
     }
 
     if (profile.role === 'admin') return 'admin';
@@ -59,8 +59,7 @@ export async function signInUnified(identity: string, password: string): Promise
       return 'client';
     }
 
-    // Por defecto clientes
-    return 'client';
+    throw new Error('La cuenta no tiene un rol habilitado.');
   } catch (cause) {
     await client.auth.signOut();
     throw cause;
@@ -96,6 +95,7 @@ export async function signUpClient(params: {
     email,
     password,
     options: {
+      emailRedirectTo: getAuthRedirectUrl('/cliente'),
       data: {
         full_name: fullName,
         phone,
@@ -124,7 +124,7 @@ export async function requestPasswordReset(email: string): Promise<void> {
     throw new Error('Ingresá un correo electrónico válido.');
   }
   const { error } = await client.auth.resetPasswordForEmail(normalized, {
-    redirectTo: `${window.location.origin}/`,
+    redirectTo: getAuthRedirectUrl('/recuperar'),
   });
   if (error) {
     throw new Error('No se pudo enviar el enlace de recuperación. Intentá nuevamente.');
@@ -145,13 +145,7 @@ export async function getCurrentUserProfile(): Promise<ClientProfile | null> {
     .single();
 
   if (error || !data) {
-    return {
-      id: session.user.id,
-      email: session.user.email ?? '',
-      fullName: session.user.user_metadata?.full_name ?? '',
-      phone: session.user.user_metadata?.phone ?? '',
-      role: 'client',
-    };
+    throw new Error('No se pudo cargar tu perfil. Reintentá.');
   }
 
   return {

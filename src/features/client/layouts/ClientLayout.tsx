@@ -6,6 +6,7 @@ import {
   onSessionChange,
 } from '../../staff/services/admin-session';
 import type { ClientProfile } from '../../appointments/model/types';
+import { NativeBridge } from '../../../shared/native/NativeBridge';
 import '../client.css';
 
 export function ClientLayout() {
@@ -21,6 +22,13 @@ export function ClientLayout() {
         if (active) {
           if (!user) {
             navigate('/', { replace: true });
+            return;
+          }
+          if (user.role !== 'client') {
+            navigate(
+              user.role === 'admin' ? '/admin' : user.role === 'barber' ? '/barbero' : '/recepcion',
+              { replace: true }
+            );
             return;
           }
           setProfile(user);
@@ -75,6 +83,7 @@ export function ClientLayout() {
 
   return (
     <div className="client-layout">
+      <NativeBridge />
       <header className="client-header">
         <NavLink to="/cliente" className="client-brand">
           <span className="client-brand-word">

@@ -78,7 +78,6 @@ export function BarberShell({
             >
               <AdminIcon name={item.icon} />
               <span>{item.label}</span>
-              {key === 'agenda' && <small>Pronto</small>}
             </button>
           ))}
         </nav>

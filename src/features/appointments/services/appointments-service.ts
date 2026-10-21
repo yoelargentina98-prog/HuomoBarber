@@ -23,7 +23,7 @@ export async function getBookingSettings(): Promise<BookingSettings> {
     .single();
 
   if (error || !data) {
-    return DEFAULT_BOOKING_SETTINGS;
+    throw new Error('No se pudo cargar la configuración de reservas.');
   }
 
   return {
@@ -270,28 +270,20 @@ export async function getClientAppointments(
   };
 }
 
-export async function getBarberAppointments(dateStr?: string): Promise<Appointment[]> {
+export async function getBarberAppointments(
+  dateStr?: string,
+  page = 1
+): Promise<{ items: Appointment[]; total: number }> {
   const client = requireSupabaseClient();
   const {
     data: { session },
   } = await client.auth.getSession();
-  if (!session?.user) return [];
-
-  let query = client.from('appointments').select('*').eq('barber_id', session.user.id);
-
-  if (dateStr) {
-    const startOfDay = `${dateStr}T00:00:00-03:00`;
-    const endOfDay = `${dateStr}T23:59:59-03:00`;
-    query = query.gte('starts_at', startOfDay).lte('starts_at', endOfDay);
-  }
-
-  const { data, error } = await query.order('starts_at', { ascending: true });
-  if (error) throw new Error('No se pudieron cargar los turnos del barbero.');
-
-  return (data ?? []).map(mapAppointmentRow);
+  if (!session?.user) throw new Error('No hay sesión activa.');
+  return getBranchAppointments({ barberId: session.user.id, dateStr, page, ascending: true });
 }
 
 export async function getBranchAppointments(params: {
+  ascending?: boolean;
   branchId?: string;
   dateStr?: string;
   barberId?: string;
@@ -301,6 +293,7 @@ export async function getBranchAppointments(params: {
   const client = requireSupabaseClient();
   const pageSize = 20;
   const page = params.page ?? 1;
+  if (!Number.isInteger(page) || page < 1) throw new Error('Página inválida.');
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
@@ -317,12 +310,15 @@ export async function getBranchAppointments(params: {
   }
   if (params.dateStr) {
     const startOfDay = `${params.dateStr}T00:00:00-03:00`;
-    const endOfDay = `${params.dateStr}T23:59:59-03:00`;
-    query = query.gte('starts_at', startOfDay).lte('starts_at', endOfDay);
+    const next = new Date(`${params.dateStr}T12:00:00Z`);
+    next.setUTCDate(next.getUTCDate() + 1);
+    const endOfDay = `${next.toISOString().slice(0, 10)}T00:00:00-03:00`;
+    query = query.gte('starts_at', startOfDay).lt('starts_at', endOfDay);
   }
 
   const { data, error, count } = await query
-    .order('starts_at', { ascending: false })
+    .order('starts_at', { ascending: params.ascending ?? false })
+    .order('id')
     .range(from, to);
 
   if (error) throw new Error('No se pudieron consultar los turnos.');
@@ -343,20 +339,20 @@ export async function completeAppointmentService(params: {
   const client = requireSupabaseClient();
   const { data, error } = await client.rpc('complete_appointment_service', {
     p_appointment_id: params.appointmentId,
-    p_payment_method: params.paymentMethod ?? null,
+    p_payment_method: params.paymentMethod ?? undefined,
     p_payment_reference: params.paymentReference ?? '',
     p_sale_notes: params.saleNotes ?? '',
-    p_operation_id: params.operationId ?? null,
+    p_operation_id: params.operationId ?? undefined,
   });
 
-  if (error || !data) {
+  if (error || !data || typeof data !== 'object' || Array.isArray(data))
     throw new Error(error?.message || 'No se pudo completar el turno.');
-  }
-
+  if (typeof data.appointmentId !== 'string' || typeof data.serviceId !== 'string')
+    throw new Error('Respuesta incompleta. Revisá Caja antes de repetir.');
   return {
     appointmentId: data.appointmentId,
     serviceId: data.serviceId,
-    receiptId: data.receiptId ?? null,
+    receiptId: typeof data.receiptId === 'string' ? data.receiptId : null,
   };
 }
 
@@ -378,6 +374,7 @@ type AppointmentDatabaseRow = {
   price_cents: number;
   duration_minutes: number;
   notes: string;
+  arrived_at?: string | null;
   cancellation_reason: string | null;
   cancelled_at: string | null;
   cancelled_by: string | null;
@@ -404,6 +401,7 @@ function mapAppointmentRow(row: AppointmentDatabaseRow): Appointment {
     startsAt: row.starts_at,
     endsAt: row.ends_at,
     status: row.status,
+    arrivedAt: row.arrived_at,
     notes: row.notes ?? '',
     cancellationReason: row.cancellation_reason,
     cancelledAt: row.cancelled_at,
@@ -412,4 +410,12 @@ function mapAppointmentRow(row: AppointmentDatabaseRow): Appointment {
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
+}
+
+export async function markAppointmentAttendance(id: string, attendance: 'arrived' | 'no_show') {
+  const { error } = await requireSupabaseClient().rpc('mark_appointment_attendance', {
+    target_appointment: id,
+    attendance,
+  });
+  if (error) throw new Error(error.message);
 }

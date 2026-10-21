@@ -1,3 +1,4 @@
+import { loadBranchSchedule, saveBranchSchedule } from './branch-service';
 import { useEffect, useState } from 'react';
 import { SaveForm } from '../../shared/components/SaveForm';
 import { IntervalEditor } from './IntervalEditor';
@@ -7,12 +8,15 @@ import { loadSchedule, saveSchedule } from './service';
 import './schedule.css';
 
 export function SchedulePanel({
-  employeeId,
+  employeeId = '',
+  branchId,
   onSaved,
 }: {
-  employeeId: string;
+  employeeId?: string;
+  branchId?: string;
   onSaved: () => void;
 }) {
+  const target = branchId ?? employeeId;
   const [attempt, setAttempt] = useState(0);
   const [loaded, setLoaded] = useState<{
     employeeId: string;
@@ -22,14 +26,14 @@ export function SchedulePanel({
   }>();
   useEffect(() => {
     let active = true;
-    loadSchedule(employeeId)
+    (branchId ? loadBranchSchedule(target) : loadSchedule(target))
       .then(data => {
-        if (active) setLoaded({ employeeId, attempt, data });
+        if (active) setLoaded({ employeeId: target, attempt, data });
       })
       .catch((cause: unknown) => {
         if (active)
           setLoaded({
-            employeeId,
+            employeeId: target,
             attempt,
             error: cause instanceof Error ? cause.message : 'No se pudieron cargar los horarios.',
           });
@@ -37,15 +41,14 @@ export function SchedulePanel({
     return () => {
       active = false;
     };
-  }, [employeeId, attempt]);
-  const current =
-    loaded?.employeeId === employeeId && loaded.attempt === attempt ? loaded : undefined;
+  }, [employeeId, branchId, target, attempt]);
+  const current = loaded?.employeeId === target && loaded.attempt === attempt ? loaded : undefined;
   return (
     <section className="management-card schedule-panel">
       <div className="section-heading">
         <div>
           <span className="eyebrow">DISPONIBILIDAD</span>
-          <h2>Horarios de actividad</h2>
+          <h2>{branchId ? 'Horarios de apertura de la sucursal' : 'Horarios de actividad'}</h2>
         </div>
       </div>
       <p className="employee-help">
@@ -54,8 +57,8 @@ export function SchedulePanel({
         remuneración.
       </p>
       <p className="employee-help">
-        Los horarios de apertura de la sucursal y la agenda todavía no están implementados. Por
-        ahora se guarda la disponibilidad del barbero.
+        La agenda cruza la apertura de la sucursal con la disponibilidad del barbero. Sin horarios
+        configurados no se ofrecen reservas. Los cambios no cancelan turnos existentes.
       </p>
       {!current && <p role="status">Cargando horarios…</p>}
       {current?.error && (
@@ -68,8 +71,9 @@ export function SchedulePanel({
       )}
       {current?.data && (
         <ScheduleForm
-          key={`${employeeId}-${current.data.revision}`}
-          employeeId={employeeId}
+          key={`${target}-${current.data.revision}`}
+          employeeId={target}
+          branchId={branchId}
           initial={current.data}
           onSaved={onSaved}
         />
@@ -80,10 +84,12 @@ export function SchedulePanel({
 
 function ScheduleForm({
   employeeId,
+  branchId,
   initial,
   onSaved,
 }: {
   employeeId: string;
+  branchId?: string;
   initial: Schedule;
   onSaved: () => void;
 }) {
@@ -92,7 +98,8 @@ function ScheduleForm({
     <SaveForm
       label="Guardar horarios"
       save={async () => {
-        await saveSchedule(employeeId, schedule);
+        if (branchId) await saveBranchSchedule(branchId, schedule);
+        else await saveSchedule(employeeId, schedule);
         setSchedule(value => ({ ...value, revision: value.revision + 1 }));
       }}
       onSaved={onSaved}

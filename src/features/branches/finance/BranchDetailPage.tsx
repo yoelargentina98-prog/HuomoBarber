@@ -1,3 +1,5 @@
+import { SchedulePanel } from '../../schedules/SchedulePanel';
+import { BookingBlocksPanel } from '../../appointments/components/BookingBlocksPanel';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { requireSupabaseClient } from '../../../integrations/supabase/client';
@@ -128,6 +130,8 @@ export function BranchDetailPage() {
               fijos y otros gastos se cargan por separado. Los anulados no suman.
             </p>
           </section>
+          <SchedulePanel branchId={branchId} onSaved={refresh} />
+          <BookingBlocksPanel branch={branchId} />
           <BranchCommissions branch={branchId} month={month} revision={revision} />
           {adding && (
             <ExpenseForm

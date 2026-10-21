@@ -3,6 +3,7 @@ import { ReceptionWorkspace } from '../../features/reception/workspace/Reception
 import { ReceptionAccess } from '../../features/reception/ReceptionAccess';
 import { useReceptionAccess } from '../../features/reception/useReceptionAccess';
 import { signOutAdmin } from '../../features/staff/services/admin-session';
+import { NativeBridge } from '../../shared/native/NativeBridge';
 import '../../features/admin/admin.css';
 export function ReceptionLayout() {
   const access = useReceptionAccess();
@@ -42,12 +43,15 @@ export function ReceptionLayout() {
     );
   if (!access.operator) return <ReceptionAccess onSuccess={access.retry} />;
   return (
-    <ReceptionWorkspace
-      key={`${access.operator.role}/${access.operator.branchId}`}
-      operator={access.operator}
-      busy={busy}
-      error={error}
-      onLogout={() => void logout()}
-    />
+    <>
+      <NativeBridge />
+      <ReceptionWorkspace
+        key={`${access.operator.role}/${access.operator.branchId}`}
+        operator={access.operator}
+        busy={busy}
+        error={error}
+        onLogout={() => void logout()}
+      />
+    </>
   );
 }

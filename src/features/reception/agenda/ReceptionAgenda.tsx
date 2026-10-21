@@ -1,3 +1,7 @@
+import { useNow } from '../../../shared/hooks/useNow';
+import { AppointmentCharge } from '../../appointments/components/AppointmentCharge';
+import { AttendanceActions } from '../../appointments/components/AttendanceActions';
+import { Pagination } from '../../../shared/components/Pagination';
 import { useEffect, useState } from 'react';
 import {
   getBranchAppointments,
@@ -6,7 +10,6 @@ import {
   getAvailableSlots,
   bookAppointment,
   cancelAppointment,
-  completeAppointmentService,
 } from '../../appointments/services/appointments-service';
 import type {
   Appointment,
@@ -15,6 +18,7 @@ import type {
   PublicBarber,
 } from '../../appointments/model/types';
 import { formatCurrency } from '../../../shared/utils/currency';
+import { useModalRegistration } from '../../../shared/native/modal-stack';
 
 export function ReceptionAgenda({
   branchId,
@@ -23,6 +27,8 @@ export function ReceptionAgenda({
   branchId: string;
   branchName: string;
 }) {
+  const now = useNow();
+  const [page, setPage] = useState(1);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -55,21 +61,22 @@ export function ReceptionAgenda({
 
   // Modal Cobro / Completar
   const [completingAppt, setCompletingAppt] = useState<Appointment | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'transfer'>('cash');
-  const [paymentReference, setPaymentReference] = useState('');
-  const [completeBusy, setCompleteBusy] = useState(false);
+
+  useModalRegistration(showManualModal, () => setShowManualModal(false));
+  useModalRegistration(Boolean(completingAppt), () => setCompletingAppt(null));
 
   const [revision, setRevision] = useState(0);
 
   useEffect(() => {
     let active = true;
     async function fetchAppointments() {
+      setLoading(true);
       try {
         const res = await getBranchAppointments({
           branchId,
           dateStr: selectedDate,
           status: statusFilter,
-          page: 1,
+          page,
         });
         if (active) {
           setAppointments(res.items);
@@ -78,6 +85,8 @@ export function ReceptionAgenda({
         }
       } catch (cause) {
         if (active) {
+          setAppointments([]);
+          setTotal(0);
           setError(
             cause instanceof Error ? cause.message : 'Error al cargar turnos de la sucursal.'
           );
@@ -90,7 +99,7 @@ export function ReceptionAgenda({
     return () => {
       active = false;
     };
-  }, [branchId, selectedDate, statusFilter, revision]);
+  }, [branchId, selectedDate, statusFilter, revision, page]);
 
   // Cargar servicios de la sucursal
   useEffect(() => {
@@ -144,28 +153,9 @@ export function ReceptionAgenda({
     }
   }
 
-  async function handleCompleteService() {
-    if (!completingAppt) return;
-    setCompleteBusy(true);
-    setError('');
-    try {
-      await completeAppointmentService({
-        appointmentId: completingAppt.id,
-        paymentMethod,
-        paymentReference,
-        saleNotes: `Turno atendido en recepción (${branchName})`,
-      });
-      setCompletingAppt(null);
-      setRevision(r => r + 1);
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Error al registrar cobro y completar.');
-    } finally {
-      setCompleteBusy(false);
-    }
-  }
-
   async function handleCancel(id: string) {
-    const reason = window.prompt('Motivo de cancelación:') || 'Cancelado en recepción';
+    const reason = window.prompt('Motivo de cancelación:');
+    if (reason === null) return;
     try {
       await cancelAppointment(id, reason);
       setRevision(r => r + 1);
@@ -221,7 +211,12 @@ export function ReceptionAgenda({
           <input
             type="date"
             value={selectedDate}
-            onChange={e => setSelectedDate(e.target.value)}
+            onChange={e => {
+              if (e.target.value) {
+                setSelectedDate(e.target.value);
+                setPage(1);
+              }
+            }}
             style={{
               padding: '0.4rem 0.6rem',
               background: '#0e1013',
@@ -244,7 +239,10 @@ export function ReceptionAgenda({
           Estado:
           <select
             value={statusFilter}
-            onChange={e => setStatusFilter(e.target.value as AppointmentStatus | 'all')}
+            onChange={e => {
+              setStatusFilter(e.target.value as AppointmentStatus | 'all');
+              setPage(1);
+            }}
             style={{
               padding: '0.4rem 0.6rem',
               background: '#0e1013',
@@ -311,11 +309,13 @@ export function ReceptionAgenda({
               </div>
 
               {appt.status === 'confirmed' && (
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <AttendanceActions appointment={appt} onSaved={() => setRevision(r => r + 1)} />
                   <button
                     type="button"
                     className="action-primary"
                     style={{ padding: '0.4rem 0.85rem', fontSize: '0.82rem' }}
+                    disabled={new Date(appt.startsAt).getTime() > now}
                     onClick={() => setCompletingAppt(appt)}
                   >
                     Atender y Cobrar
@@ -335,93 +335,19 @@ export function ReceptionAgenda({
         </div>
       )}
 
+      {!loading && !error && (
+        <Pagination page={page - 1} size={20} total={total} onPage={value => setPage(value + 1)} />
+      )}
       {/* MODAL COBRAR / COMPLETAR */}
       {completingAppt && (
-        <div className="huomo-modal-backdrop">
-          <div className="huomo-modal">
-            <h2>Registrar atención y cobro en Caja</h2>
-            <p>
-              Cliente: <strong>{completingAppt.clientName}</strong>
-              <br />
-              Servicio: <strong>{completingAppt.serviceName}</strong> con{' '}
-              <strong>{completingAppt.barberName}</strong>
-              <br />
-              Importe acordado:{' '}
-              <strong style={{ color: '#c59b27' }}>
-                {formatCurrency(completingAppt.priceCents)}
-              </strong>
-            </p>
-
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '1rem',
-                marginBottom: '1.5rem',
-              }}
-            >
-              <label style={{ fontSize: '0.88rem', color: '#d1d5db' }}>
-                Medio de pago en caja:
-                <select
-                  value={paymentMethod}
-                  onChange={e => setPaymentMethod(e.target.value as 'cash' | 'transfer')}
-                  style={{
-                    width: '100%',
-                    marginTop: '0.35rem',
-                    padding: '0.65rem',
-                    background: '#0e1013',
-                    color: '#fff',
-                    border: '1px solid rgba(255,255,255,0.12)',
-                    borderRadius: '6px',
-                  }}
-                >
-                  <option value="cash">Efectivo</option>
-                  <option value="transfer">Transferencia bancaria</option>
-                </select>
-              </label>
-
-              {paymentMethod === 'transfer' && (
-                <label style={{ fontSize: '0.88rem', color: '#d1d5db' }}>
-                  Referencia o comprobante de transferencia:
-                  <input
-                    type="text"
-                    value={paymentReference}
-                    placeholder="ej: Op. #98124"
-                    onChange={e => setPaymentReference(e.target.value)}
-                    style={{
-                      width: '100%',
-                      marginTop: '0.35rem',
-                      padding: '0.65rem',
-                      background: '#0e1013',
-                      color: '#fff',
-                      border: '1px solid rgba(255,255,255,0.12)',
-                      borderRadius: '6px',
-                    }}
-                  />
-                </label>
-              )}
-            </div>
-
-            <div className="huomo-modal-actions">
-              <button
-                type="button"
-                className="action-secondary"
-                disabled={completeBusy}
-                onClick={() => setCompletingAppt(null)}
-              >
-                Volver
-              </button>
-              <button
-                type="button"
-                className="action-primary"
-                disabled={completeBusy}
-                onClick={() => void handleCompleteService()}
-              >
-                {completeBusy ? 'Registrando en Caja…' : 'Confirmar cobro y finalizar turno'}
-              </button>
-            </div>
-          </div>
-        </div>
+        <AppointmentCharge
+          appointment={completingAppt}
+          onClose={() => setCompletingAppt(null)}
+          onSaved={() => {
+            setCompletingAppt(null);
+            setRevision(r => r + 1);
+          }}
+        />
       )}
 
       {/* MODAL RESERVA MANUAL EN RECEPCION */}

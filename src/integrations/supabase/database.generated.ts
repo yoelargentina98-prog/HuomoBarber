@@ -8,6 +8,116 @@ export type Database = {
   };
   public: {
     Tables: {
+      appointments: {
+        Row: {
+          arrived_at: string | null;
+          barber_id: string;
+          barber_name: string;
+          branch_id: string;
+          branch_name: string;
+          cancellation_reason: string | null;
+          cancelled_at: string | null;
+          cancelled_by: string | null;
+          client_email: string;
+          client_id: string | null;
+          client_name: string;
+          client_phone: string;
+          created_at: string;
+          created_by: string | null;
+          duration_minutes: number;
+          ends_at: string;
+          id: string;
+          notes: string;
+          price_cents: number;
+          service_id: string;
+          service_name: string;
+          starts_at: string;
+          status: Database['public']['Enums']['appointment_status'];
+          updated_at: string;
+        };
+        Insert: {
+          arrived_at?: string | null;
+          barber_id: string;
+          barber_name: string;
+          branch_id: string;
+          branch_name: string;
+          cancellation_reason?: string | null;
+          cancelled_at?: string | null;
+          cancelled_by?: string | null;
+          client_email?: string;
+          client_id?: string | null;
+          client_name: string;
+          client_phone?: string;
+          created_at?: string;
+          created_by?: string | null;
+          duration_minutes: number;
+          ends_at: string;
+          id?: string;
+          notes?: string;
+          price_cents: number;
+          service_id: string;
+          service_name: string;
+          starts_at: string;
+          status?: Database['public']['Enums']['appointment_status'];
+          updated_at?: string;
+        };
+        Update: {
+          arrived_at?: string | null;
+          barber_id?: string;
+          barber_name?: string;
+          branch_id?: string;
+          branch_name?: string;
+          cancellation_reason?: string | null;
+          cancelled_at?: string | null;
+          cancelled_by?: string | null;
+          client_email?: string;
+          client_id?: string | null;
+          client_name?: string;
+          client_phone?: string;
+          created_at?: string;
+          created_by?: string | null;
+          duration_minutes?: number;
+          ends_at?: string;
+          id?: string;
+          notes?: string;
+          price_cents?: number;
+          service_id?: string;
+          service_name?: string;
+          starts_at?: string;
+          status?: Database['public']['Enums']['appointment_status'];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'appointments_barber_id_fkey';
+            columns: ['barber_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'appointments_branch_id_fkey';
+            columns: ['branch_id'];
+            isOneToOne: false;
+            referencedRelation: 'branches';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'appointments_client_id_fkey';
+            columns: ['client_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'appointments_service_id_fkey';
+            columns: ['service_id'];
+            isOneToOne: false;
+            referencedRelation: 'service_catalog';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       barber_schedules: {
         Row: {
           employee_id: string;
@@ -72,6 +182,90 @@ export type Database = {
             referencedColumns: ['id'];
           },
         ];
+      };
+      booking_blocks: {
+        Row: {
+          barber_id: string | null;
+          branch_id: string;
+          created_at: string;
+          created_by: string;
+          ends_at: string;
+          id: string;
+          reason: string;
+          removed_at: string | null;
+          removed_by: string | null;
+          starts_at: string;
+        };
+        Insert: {
+          barber_id?: string | null;
+          branch_id: string;
+          created_at?: string;
+          created_by: string;
+          ends_at: string;
+          id?: string;
+          reason: string;
+          removed_at?: string | null;
+          removed_by?: string | null;
+          starts_at: string;
+        };
+        Update: {
+          barber_id?: string | null;
+          branch_id?: string;
+          created_at?: string;
+          created_by?: string;
+          ends_at?: string;
+          id?: string;
+          reason?: string;
+          removed_at?: string | null;
+          removed_by?: string | null;
+          starts_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'booking_blocks_barber_id_fkey';
+            columns: ['barber_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'booking_blocks_branch_id_fkey';
+            columns: ['branch_id'];
+            isOneToOne: false;
+            referencedRelation: 'branches';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      booking_settings: {
+        Row: {
+          cancel_limit_hours: number;
+          id: boolean;
+          max_active_per_client: number;
+          max_future_days: number;
+          min_advance_hours: number;
+          updated_at: string;
+          updated_by: string | null;
+        };
+        Insert: {
+          cancel_limit_hours?: number;
+          id?: boolean;
+          max_active_per_client?: number;
+          max_future_days?: number;
+          min_advance_hours?: number;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Update: {
+          cancel_limit_hours?: number;
+          id?: boolean;
+          max_active_per_client?: number;
+          max_future_days?: number;
+          min_advance_hours?: number;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Relationships: [];
       };
       branch_expense_audit: {
         Row: {
@@ -175,6 +369,38 @@ export type Database = {
             foreignKeyName: 'branch_expenses_branch_id_fkey';
             columns: ['branch_id'];
             isOneToOne: false;
+            referencedRelation: 'branches';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      branch_schedules: {
+        Row: {
+          branch_id: string;
+          exceptions: Json;
+          revision: number;
+          updated_at: string;
+          weekly: Json;
+        };
+        Insert: {
+          branch_id: string;
+          exceptions?: Json;
+          revision?: number;
+          updated_at?: string;
+          weekly?: Json;
+        };
+        Update: {
+          branch_id?: string;
+          exceptions?: Json;
+          revision?: number;
+          updated_at?: string;
+          weekly?: Json;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'branch_schedules_branch_id_fkey';
+            columns: ['branch_id'];
+            isOneToOne: true;
             referencedRelation: 'branches';
             referencedColumns: ['id'];
           },
@@ -504,6 +730,7 @@ export type Database = {
       employee_services: {
         Row: {
           amount_cents: number;
+          appointment_id: string | null;
           branch_id: string | null;
           branch_name: string | null;
           category: string;
@@ -522,6 +749,7 @@ export type Database = {
         };
         Insert: {
           amount_cents: number;
+          appointment_id?: string | null;
           branch_id?: string | null;
           branch_name?: string | null;
           category: string;
@@ -540,6 +768,7 @@ export type Database = {
         };
         Update: {
           amount_cents?: number;
+          appointment_id?: string | null;
           branch_id?: string | null;
           branch_name?: string | null;
           category?: string;
@@ -557,6 +786,13 @@ export type Database = {
           voided_at?: string | null;
         };
         Relationships: [
+          {
+            foreignKeyName: 'employee_services_appointment_id_fkey';
+            columns: ['appointment_id'];
+            isOneToOne: false;
+            referencedRelation: 'appointments';
+            referencedColumns: ['id'];
+          },
           {
             foreignKeyName: 'employee_services_branch_id_fkey';
             columns: ['branch_id'];
@@ -662,9 +898,103 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      book_appointment: {
+        Args: {
+          p_barber_id: string;
+          p_branch_id: string;
+          p_client_email?: string;
+          p_client_name: string;
+          p_client_phone?: string;
+          p_notes?: string;
+          p_service_id: string;
+          p_starts_at: string;
+        };
+        Returns: {
+          arrived_at: string | null;
+          barber_id: string;
+          barber_name: string;
+          branch_id: string;
+          branch_name: string;
+          cancellation_reason: string | null;
+          cancelled_at: string | null;
+          cancelled_by: string | null;
+          client_email: string;
+          client_id: string | null;
+          client_name: string;
+          client_phone: string;
+          created_at: string;
+          created_by: string | null;
+          duration_minutes: number;
+          ends_at: string;
+          id: string;
+          notes: string;
+          price_cents: number;
+          service_id: string;
+          service_name: string;
+          starts_at: string;
+          status: Database['public']['Enums']['appointment_status'];
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'appointments';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      booking_day_intervals: {
+        Args: { exceptions: Json; target_date: string; weekly: Json };
+        Returns: Json;
+      };
+      booking_window_available: {
+        Args: {
+          exclude_appointment?: string;
+          slot_minutes: number;
+          slot_start: string;
+          target_barber: string;
+          target_branch: string;
+          target_service: string;
+        };
+        Returns: boolean;
+      };
       can_access_cash_branch: {
         Args: { target_branch: string };
         Returns: boolean;
+      };
+      cancel_appointment: {
+        Args: { p_appointment_id: string; p_reason?: string };
+        Returns: {
+          arrived_at: string | null;
+          barber_id: string;
+          barber_name: string;
+          branch_id: string;
+          branch_name: string;
+          cancellation_reason: string | null;
+          cancelled_at: string | null;
+          cancelled_by: string | null;
+          client_email: string;
+          client_id: string | null;
+          client_name: string;
+          client_phone: string;
+          created_at: string;
+          created_by: string | null;
+          duration_minutes: number;
+          ends_at: string;
+          id: string;
+          notes: string;
+          price_cents: number;
+          service_id: string;
+          service_name: string;
+          starts_at: string;
+          status: Database['public']['Enums']['appointment_status'];
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'appointments';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
       };
       collect_service_payment: {
         Args: {
@@ -676,6 +1006,39 @@ export type Database = {
           target_service: string;
         };
         Returns: string;
+      };
+      complete_appointment_service: {
+        Args: {
+          p_appointment_id: string;
+          p_operation_id?: string;
+          p_payment_method?: string;
+          p_payment_reference?: string;
+          p_sale_notes?: string;
+        };
+        Returns: Json;
+      };
+      complete_appointment_service_once: {
+        Args: {
+          p_appointment_id: string;
+          p_operation_id?: string;
+          p_payment_method?: string;
+          p_payment_reference?: string;
+          p_sale_notes?: string;
+        };
+        Returns: Json;
+      };
+      get_available_booking_slots: {
+        Args: {
+          p_barber_id: string;
+          p_branch_id: string;
+          p_service_id: string;
+          p_target_date: string;
+        };
+        Returns: {
+          ends_at: string;
+          starts_at: string;
+          time_display: string;
+        }[];
       };
       get_barber_dashboard: { Args: { week_start: string }; Returns: Json };
       get_barber_portal: { Args: never; Returns: Json };
@@ -751,6 +1114,14 @@ export type Database = {
           service_name: string;
         }[];
       };
+      get_public_barbers_by_branch_and_service: {
+        Args: { target_branch: string; target_service: string };
+        Returns: {
+          barber_id: string;
+          barber_name: string;
+          branch_id: string;
+        }[];
+      };
       get_reception_team: {
         Args: { target_branch?: string };
         Returns: {
@@ -777,7 +1148,12 @@ export type Database = {
           username: string;
         }[];
       };
+      is_active_booking_barber: { Args: never; Returns: boolean };
       is_admin: { Args: never; Returns: boolean };
+      mark_appointment_attendance: {
+        Args: { attendance: string; target_appointment: string };
+        Returns: undefined;
+      };
       record_branch_expense: {
         Args: {
           expense_category: string;
@@ -835,11 +1211,92 @@ export type Database = {
         };
         Returns: string;
       };
+      remove_booking_block: {
+        Args: { target_block: string };
+        Returns: undefined;
+      };
+      reschedule_appointment: {
+        Args: { p_appointment_id: string; p_new_starts_at: string };
+        Returns: {
+          arrived_at: string | null;
+          barber_id: string;
+          barber_name: string;
+          branch_id: string;
+          branch_name: string;
+          cancellation_reason: string | null;
+          cancelled_at: string | null;
+          cancelled_by: string | null;
+          client_email: string;
+          client_id: string | null;
+          client_name: string;
+          client_phone: string;
+          created_at: string;
+          created_by: string | null;
+          duration_minutes: number;
+          ends_at: string;
+          id: string;
+          notes: string;
+          price_cents: number;
+          service_id: string;
+          service_name: string;
+          starts_at: string;
+          status: Database['public']['Enums']['appointment_status'];
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'appointments';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       save_barber_schedule: {
         Args: {
           date_exceptions: Json;
           expected_revision: number;
           target_employee: string;
+          weekly_hours: Json;
+        };
+        Returns: undefined;
+      };
+      save_booking_block: {
+        Args: {
+          block_end: string;
+          block_reason: string;
+          block_start: string;
+          target_barber: string;
+          target_branch: string;
+        };
+        Returns: string;
+      };
+      save_booking_settings: {
+        Args: {
+          p_cancel_limit_hours: number;
+          p_max_active_per_client: number;
+          p_max_future_days: number;
+          p_min_advance_hours: number;
+        };
+        Returns: {
+          cancel_limit_hours: number;
+          id: boolean;
+          max_active_per_client: number;
+          max_future_days: number;
+          min_advance_hours: number;
+          updated_at: string;
+          updated_by: string | null;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'booking_settings';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      save_branch_schedule: {
+        Args: {
+          date_exceptions: Json;
+          expected_revision: number;
+          target_branch: string;
           weekly_hours: Json;
         };
         Returns: undefined;
@@ -889,7 +1346,8 @@ export type Database = {
       };
     };
     Enums: {
-      app_role: 'admin' | 'reception' | 'barber';
+      app_role: 'admin' | 'reception' | 'barber' | 'client';
+      appointment_status: 'confirmed' | 'completed' | 'cancelled' | 'no_show';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -1011,7 +1469,8 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ['admin', 'reception', 'barber'],
+      app_role: ['admin', 'reception', 'barber', 'client'],
+      appointment_status: ['confirmed', 'completed', 'cancelled', 'no_show'],
     },
   },
 } as const;

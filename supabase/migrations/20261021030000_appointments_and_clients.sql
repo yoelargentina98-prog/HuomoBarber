@@ -75,7 +75,7 @@ DROP POLICY IF EXISTS admin_read ON public.barber_services;
 DROP POLICY IF EXISTS barber_services_read_policy ON public.barber_services;
 CREATE POLICY barber_services_read_policy ON public.barber_services
   FOR SELECT TO authenticated
-  USING (true);
+  USING ((SELECT public.is_admin()) OR employee_id = auth.uid());
 
 -- 4. Función segura para listar barberos asignados a una sucursal y servicio sin exponer datos privados
 CREATE OR REPLACE FUNCTION public.get_public_barbers_by_branch_and_service(
@@ -431,6 +431,16 @@ BEGIN
     END IF;
   END IF;
 
+  IF v_user_role IS NULL OR v_user_role NOT IN ('admin','reception','client') THEN
+    RAISE EXCEPTION 'Esta cuenta no puede crear reservas.' USING ERRCODE='42501';
+  END IF;
+  IF v_user_role='reception' AND NOT public.can_access_cash_branch(p_branch_id) THEN
+    RAISE EXCEPTION 'Recepción debe estar activa y pertenecer a la sucursal.' USING ERRCODE='42501';
+  END IF;
+  IF v_user_role='client' THEN
+    PERFORM pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended('booking-client:'||v_user_id::text,0));
+  END IF;
+  PERFORM pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended('booking-branch:'||p_branch_id::text,0));
   -- 1. Validación de reglas de reserva
   SELECT * INTO v_settings FROM public.booking_settings WHERE id = true;
   IF v_settings.id IS NULL THEN
@@ -523,7 +533,7 @@ BEGIN
     END IF;
   END LOOP;
 
-  IF NOT v_slot_valid AND NOT v_is_staff THEN
+  IF NOT v_slot_valid THEN
     RAISE EXCEPTION 'El horario seleccionado ya no está disponible. Por favor elegí otro.';
   END IF;
 
@@ -548,7 +558,7 @@ BEGIN
     created_by
   )
   VALUES (
-    v_user_id,
+    CASE WHEN v_user_role='client' THEN v_user_id ELSE NULL END,
     btrim(p_client_name),
     btrim(p_client_phone),
     btrim(p_client_email),
@@ -621,9 +631,7 @@ BEGIN
       RAISE EXCEPTION 'Solo se puede cancelar con al menos % horas de anticipación.', v_settings.cancel_limit_hours;
     END IF;
   ELSIF v_user_role = 'reception' THEN
-    IF NOT EXISTS (
-      SELECT 1 FROM public.profiles WHERE id = v_user_id AND branch_id = v_appt.branch_id
-    ) THEN
+    IF NOT public.can_access_cash_branch(v_appt.branch_id) THEN
       RAISE EXCEPTION 'No podés cancelar turnos de otra sucursal.' USING ERRCODE = '42501';
     END IF;
   ELSIF v_user_role <> 'admin' THEN
@@ -697,9 +705,7 @@ BEGIN
       RAISE EXCEPTION 'Solo podés reprogramar con al menos % horas de anticipación.', v_settings.cancel_limit_hours;
     END IF;
   ELSIF v_user_role = 'reception' THEN
-    IF NOT EXISTS (
-      SELECT 1 FROM public.profiles WHERE id = v_user_id AND branch_id = v_appt.branch_id
-    ) THEN
+    IF NOT public.can_access_cash_branch(v_appt.branch_id) THEN
       RAISE EXCEPTION 'No podés reprogramar turnos de otra sucursal.' USING ERRCODE = '42501';
     END IF;
   ELSIF v_user_role <> 'admin' THEN
@@ -767,7 +773,7 @@ BEGIN
   END IF;
 
   SELECT role INTO v_user_role FROM public.profiles WHERE id = v_user_id;
-  IF v_user_role NOT IN ('admin', 'reception') THEN
+  IF v_user_role IS NULL OR v_user_role NOT IN ('admin', 'reception') THEN
     RAISE EXCEPTION 'Solo administración y recepción pueden asentar la atención de turnos.' USING ERRCODE = '42501';
   END IF;
 
@@ -780,9 +786,7 @@ BEGIN
     RAISE EXCEPTION 'Solo turnos confirmados pueden marcarse como completados.';
   END IF;
 
-  IF v_user_role = 'reception' AND NOT EXISTS (
-    SELECT 1 FROM public.profiles WHERE id = v_user_id AND branch_id = v_appt.branch_id
-  ) THEN
+  IF v_user_role = 'reception' AND NOT public.can_access_cash_branch(v_appt.branch_id) THEN
     RAISE EXCEPTION 'No podés gestionar turnos de otra sucursal.' USING ERRCODE = '42501';
   END IF;
 
@@ -821,7 +825,7 @@ BEGIN
     v_appt.barber_id,
     v_appt.service_id,
     v_appt.service_name,
-    'other',
+    (SELECT category FROM public.service_catalog WHERE id=v_appt.service_id),
     v_service_time,
     v_appt.price_cents,
     v_config.commission_percent,

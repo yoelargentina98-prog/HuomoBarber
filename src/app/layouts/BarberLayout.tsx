@@ -6,6 +6,7 @@ import { requireSupabaseClient } from '../../integrations/supabase/client';
 import '../../features/admin/admin.css';
 import { BarberDashboard } from '../../features/barber/dashboard/BarberDashboard';
 import { BarberShell } from '../../features/barber/components/BarberShell';
+import { NativeBridge } from '../../shared/native/NativeBridge';
 export function BarberLayout() {
   const [section, setSection] = useState<BarberSection>('overview');
   const [revision, setRevision] = useState(0);
@@ -89,15 +90,18 @@ export function BarberLayout() {
       </main>
     );
   return (
-    <BarberShell
-      profile={state.profile}
-      section={section}
-      onNavigate={setSection}
-      leaving={busy}
-      logoutError={logoutError}
-      onLogout={() => void logout()}
-    >
-      <BarberDashboard key={state.profile.id} employeeId={state.profile.id} section={section} />
-    </BarberShell>
+    <>
+      <NativeBridge />
+      <BarberShell
+        profile={state.profile}
+        section={section}
+        onNavigate={setSection}
+        leaving={busy}
+        logoutError={logoutError}
+        onLogout={() => void logout()}
+      >
+        <BarberDashboard key={state.profile.id} employeeId={state.profile.id} section={section} />
+      </BarberShell>
+    </>
   );
 }

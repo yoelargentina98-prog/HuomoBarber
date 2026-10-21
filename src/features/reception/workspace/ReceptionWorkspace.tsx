@@ -138,6 +138,7 @@ export function ReceptionWorkspace({
       )}
       {section === 'agenda' && branch && (
         <ReceptionAgenda
+          key={branch}
           branchId={branch}
           branchName={
             operator.branchName || branches.find(b => b.id === branch)?.name || 'Sucursal'

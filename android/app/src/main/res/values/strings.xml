@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Huomo</string>
+    <string name="title_activity_main">Huomo</string>
+    <string name="package_name">com.huomo.barber</string>
+    <string name="custom_url_scheme">com.huomo.barber</string>
+</resources>

@@ -5,6 +5,7 @@ import { useAdminAccess } from '../../features/admin/hooks/useAdminAccess';
 import { AdminAccess } from '../../features/staff/components/AdminAccess';
 import { StaffProvider } from '../../features/staff/components/StaffProvider';
 import { signOutAdmin } from '../../features/staff/services/admin-session';
+import { NativeBridge } from '../../shared/native/NativeBridge';
 import '../../features/admin/admin.css';
 
 export function AdminLayout() {
@@ -46,6 +47,7 @@ export function AdminLayout() {
   }
   return (
     <StaffProvider>
+      <NativeBridge />
       <AdminShell leaving={leaving} logoutError={logoutError} onLogout={() => void logout()}>
         <Outlet />
       </AdminShell>

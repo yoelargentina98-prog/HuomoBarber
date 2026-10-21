@@ -1,3 +1,4 @@
+import { Pagination } from '../../../shared/components/Pagination';
 import { useEffect, useState } from 'react';
 import { getBarberAppointments } from '../../appointments/services/appointments-service';
 import type { Appointment } from '../../appointments/model/types';
@@ -10,6 +11,8 @@ export function BarberAgenda() {
     day: '2-digit',
   }).format(new Date());
 
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
   const [selectedDate, setSelectedDate] = useState<string>(todayStr);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,8 +24,11 @@ export function BarberAgenda() {
       setLoading(true);
       setError('');
       try {
-        const data = await getBarberAppointments(selectedDate);
-        if (active) setAppointments(data);
+        const data = await getBarberAppointments(selectedDate, page);
+        if (active) {
+          setAppointments(data.items);
+          setTotal(data.total);
+        }
       } catch (cause) {
         if (active) {
           setError(cause instanceof Error ? cause.message : 'Error al cargar tu agenda.');
@@ -35,7 +41,7 @@ export function BarberAgenda() {
     return () => {
       active = false;
     };
-  }, [selectedDate]);
+  }, [selectedDate, page]);
 
   return (
     <section className="management-card">
@@ -61,7 +67,12 @@ export function BarberAgenda() {
           <input
             type="date"
             value={selectedDate}
-            onChange={e => setSelectedDate(e.target.value)}
+            onChange={e => {
+              if (e.target.value) {
+                setSelectedDate(e.target.value);
+                setPage(1);
+              }
+            }}
             style={{
               padding: '0.45rem 0.75rem',
               background: '#0e1013',
@@ -158,6 +169,9 @@ export function BarberAgenda() {
             </div>
           ))}
         </div>
+      )}
+      {!loading && !error && (
+        <Pagination page={page - 1} size={20} total={total} onPage={value => setPage(value + 1)} />
       )}
     </section>
   );

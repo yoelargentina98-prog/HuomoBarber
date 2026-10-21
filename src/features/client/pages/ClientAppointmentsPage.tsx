@@ -8,6 +8,7 @@ import {
 } from '../../appointments/services/appointments-service';
 import type { Appointment, BookingSettings, BookingSlot } from '../../appointments/model/types';
 import { formatCurrency } from '../../../shared/utils/currency';
+import { useModalRegistration } from '../../../shared/native/modal-stack';
 
 export function ClientAppointmentsPage() {
   const [tab, setTab] = useState<'upcoming' | 'history'>('upcoming');
@@ -33,6 +34,10 @@ export function ClientAppointmentsPage() {
   const [rescheduleLoadingSlots, setRescheduleLoadingSlots] = useState(false);
 
   const [detailAppt, setDetailAppt] = useState<Appointment | null>(null);
+
+  useModalRegistration(Boolean(cancellingAppt), () => setCancellingAppt(null));
+  useModalRegistration(Boolean(reschedulingAppt), () => setReschedulingAppt(null));
+  useModalRegistration(Boolean(detailAppt), () => setDetailAppt(null));
 
   useEffect(() => {
     async function loadSettings() {

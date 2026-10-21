@@ -5,7 +5,7 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 import prettierConfig from 'eslint-config-prettier';
 
 export default tseslint.config(
-  { ignores: ['dist', 'node_modules', '.tmp'] },
+  { ignores: ['dist', 'node_modules', '.tmp', 'android/**', 'ios/**', '**/.gradle/**'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
