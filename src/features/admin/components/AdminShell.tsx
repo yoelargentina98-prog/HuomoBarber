@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { AdminIcon } from './AdminIcon';
 import { APP_ROUTES } from '../../../app/router/routes';
@@ -11,8 +11,11 @@ interface AdminShellProps {
 }
 export function AdminShell({ children, leaving, logoutError, onLogout }: AdminShellProps) {
   const { pathname } = useLocation();
+  useEffect(() => {
+    if (window.matchMedia?.('(max-width: 900px)').matches) window.scrollTo({ top: 0, left: 0 });
+  }, [pathname]);
   return (
-    <div className="management-app">
+    <div className="management-app admin-workspace">
       <a className="skip-link" href="#admin-content">
         Saltar al contenido
       </a>
@@ -70,7 +73,12 @@ export function AdminShell({ children, leaving, logoutError, onLogout }: AdminSh
               Administrador<small>Gestión del negocio</small>
             </div>
           </div>
-          <button className="logout-button" disabled={leaving} onClick={onLogout}>
+          <button
+            className="logout-button"
+            aria-label={leaving ? 'Cerrando sesión' : 'Cerrar sesión'}
+            disabled={leaving}
+            onClick={onLogout}
+          >
             <AdminIcon name="logout" />
             {leaving ? 'Saliendo…' : 'Cerrar sesión'}
           </button>
@@ -79,8 +87,11 @@ export function AdminShell({ children, leaving, logoutError, onLogout }: AdminSh
       </aside>
       <div className="management-body">
         <header className="management-topbar">
+          <span className="admin-mobile-brand" aria-hidden="true">
+            HUOMO<small>Administración</small>
+          </span>
           <div className="breadcrumb">
-            Administración <span>/</span>
+            <span className="breadcrumb-root">Administración</span> <span>/</span>
             <strong>
               {pathname.includes('/personal')
                 ? 'Equipo'

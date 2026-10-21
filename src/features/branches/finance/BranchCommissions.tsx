@@ -76,7 +76,7 @@ export function BranchCommissions({
         >
           {pageRows => (
             <div className="branch-finance-table-scroll">
-              <table className="branch-finance-table">
+              <table role="table" className="branch-finance-table">
                 <thead>
                   <tr>
                     <th>Barbero</th>
@@ -87,7 +87,7 @@ export function BranchCommissions({
                 <tbody>
                   {pageRows.map(row => (
                     <tr key={row.employee_id}>
-                      <td>
+                      <td data-label="Barbero">
                         <Link className="text-link" to={`/admin/personal/${row.employee_id}`}>
                           {row.full_name ?? row.username}
                         </Link>
@@ -96,8 +96,8 @@ export function BranchCommissions({
                           <small>Histórico: actualmente en otra sucursal</small>
                         )}
                       </td>
-                      <td>{row.service_count}</td>
-                      <td>
+                      <td data-label="Servicios del mes">{row.service_count}</td>
+                      <td data-label="Comisión generada">
                         <strong>{money(row.commission_cents)}</strong>
                       </td>
                     </tr>

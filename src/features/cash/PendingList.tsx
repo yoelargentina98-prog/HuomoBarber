@@ -23,7 +23,7 @@ export function PendingList({
     <Paginated items={services} source={source} cash>
       {pageRows => (
         <div className="staff-table-wrapper">
-          <table className="staff-table">
+          <table role="table" className="staff-table">
             <thead>
               <tr>
                 <th>SERVICIO / FECHA</th>
@@ -35,11 +35,11 @@ export function PendingList({
             <tbody>
               {pageRows.map(service => (
                 <tr key={service.id}>
-                  <td>
+                  <td data-label="Servicio y fecha">
                     <strong>{service.service_name}</strong>
                     <small className="table-detail">{serviceDate(service.performed_at)}</small>
                   </td>
-                  <td>
+                  <td data-label="Barbero y sucursal">
                     {linkEmployees ? (
                       <Link to={`/admin/personal/${service.employee_id}`}>
                         {service.barber_name}
@@ -51,8 +51,8 @@ export function PendingList({
                       {service.branch_name ?? 'Sin sucursal histórica'}
                     </small>
                   </td>
-                  <td>{money(service.amount_cents)}</td>
-                  <td>
+                  <td data-label="Importe">{money(service.amount_cents)}</td>
+                  <td data-label="Cobro">
                     {service.branch_id ? (
                       <button className="action-secondary" onClick={() => onCollect(service)}>
                         Cobrar

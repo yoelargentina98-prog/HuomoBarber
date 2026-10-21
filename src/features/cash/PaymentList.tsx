@@ -21,7 +21,7 @@ export function PaymentList({
     <Paginated items={payments} source={source} cash>
       {pageRows => (
         <div className="staff-table-wrapper">
-          <table className="staff-table">
+          <table role="table" className="staff-table">
             <caption className="employee-help">
               Cobros según su fecha de pago. Los anulados se conservan y no suman.
             </caption>
@@ -37,7 +37,7 @@ export function PaymentList({
             <tbody>
               {pageRows.map(payment => (
                 <tr key={payment.id} className={payment.voided_at ? 'entry-voided' : ''}>
-                  <td>
+                  <td data-label="Servicio y fecha">
                     <strong>{payment.service_name}</strong>
                     <small className="table-detail">{serviceDate(payment.paid_at)}</small>
                     {payment.reference && (
@@ -46,17 +46,17 @@ export function PaymentList({
                     {payment.notes && <small className="table-detail">{payment.notes}</small>}
                     <small className="table-detail">Cobro: {payment.id.slice(0, 8)}</small>
                   </td>
-                  <td>
+                  <td data-label="Sucursal y barbero">
                     {payment.branch_name}
                     <small className="table-detail">{payment.barber_name}</small>
                   </td>
-                  <td>
+                  <td data-label="Medio de pago">
                     <span className={`cash-method cash-method-${payment.method}`}>
                       {paymentMethods[payment.method as keyof typeof paymentMethods]}
                     </span>
                   </td>
-                  <td>{money(payment.amount_cents)}</td>
-                  <td>
+                  <td data-label="Importe">{money(payment.amount_cents)}</td>
+                  <td data-label="Estado">
                     {payment.voided_at ? (
                       <span>
                         Anulado<small className="table-detail">{payment.void_reason}</small>

@@ -91,7 +91,7 @@ export function AdjustmentsPanel({
           >
             {pageRows => (
               <div className="staff-table-wrapper">
-                <table className="staff-table">
+                <table role="table" className="staff-table">
                   <thead>
                     <tr>
                       <th>CONCEPTO</th>
@@ -103,16 +103,16 @@ export function AdjustmentsPanel({
                   <tbody>
                     {pageRows.map(item => (
                       <tr key={item.id} className={item.voided_at ? 'entry-voided' : ''}>
-                        <td>
+                        <td data-label="Concepto">
                           {item.description}
                           <small className="table-detail">{serviceDate(item.created_at)}</small>
                         </td>
-                        <td>{MOVEMENT_KINDS[item.kind as MovementKind]}</td>
-                        <td>
+                        <td data-label="Tipo">{MOVEMENT_KINDS[item.kind as MovementKind]}</td>
+                        <td data-label="Importe">
                           {item.kind === 'deduction' ? '− ' : '+ '}
                           {money(item.amount_cents)}
                         </td>
-                        <td>
+                        <td data-label="Estado">
                           {item.voided_at ? (
                             <span title={item.void_reason ?? ''}>Anulado</span>
                           ) : (

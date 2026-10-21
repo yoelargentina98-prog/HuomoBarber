@@ -4,3 +4,7 @@
 @import './styles/dashboard.css';
 @import './styles/access.css';
 @import '../staff/staff.css';
+@import './styles/mobile-navigation.css';
+@import './styles/mobile.css';
+@import './styles/mobile-tables.css';
+@import './styles/mobile-access.css';

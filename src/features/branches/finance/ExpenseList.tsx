@@ -27,7 +27,7 @@ export function ExpenseList({
         <Paginated items={expenses} source={source}>
           {pageRows => (
             <div className="branch-finance-table-scroll">
-              <table className="branch-finance-table">
+              <table role="table" className="branch-finance-table">
                 <thead>
                   <tr>
                     <th>Fecha / concepto</th>
@@ -40,17 +40,19 @@ export function ExpenseList({
                 <tbody>
                   {pageRows.map(expense => (
                     <tr key={expense.id} className={expense.voided_at ? 'expense-voided' : ''}>
-                      <td>
+                      <td data-label="Fecha y concepto">
                         <strong>{expense.description}</strong>
                         <small>{expense.paid_on.split('-').reverse().join('/')}</small>
                         {expense.notes && <small>{expense.notes}</small>}
                       </td>
-                      <td>
+                      <td data-label="Categoría">
                         {expenseCategories[expense.category as keyof typeof expenseCategories]}
                       </td>
-                      <td>{expense.method === 'cash' ? 'Efectivo' : 'Transferencia'}</td>
-                      <td>{money(expense.amount_cents)}</td>
-                      <td>
+                      <td data-label="Medio de pago">
+                        {expense.method === 'cash' ? 'Efectivo' : 'Transferencia'}
+                      </td>
+                      <td data-label="Importe">{money(expense.amount_cents)}</td>
+                      <td data-label="Estado">
                         {expense.voided_at ? (
                           <>
                             <span>Anulado</span>

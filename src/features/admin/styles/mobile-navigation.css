@@ -1,0 +1,131 @@
+.admin-mobile-brand {
+  display: none;
+}
+.admin-workspace :is(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid #a17b42;
+  outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+  .admin-workspace {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+  }
+  .admin-workspace .management-sidebar {
+    display: contents;
+  }
+  .admin-workspace .sidebar-brand,
+  .admin-workspace .workspace-label,
+  .admin-workspace .nav-caption,
+  .admin-workspace .nav-unavailable,
+  .admin-workspace .admin-identity {
+    display: none;
+  }
+  .admin-workspace .management-nav {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 60;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 2px;
+    padding: 8px max(6px, env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom))
+      max(6px, env(safe-area-inset-left));
+    background: #fff;
+    border-top: 1px solid #dce4d7;
+    box-shadow: 0 -4px 24px #182c2408;
+  }
+  .admin-workspace .management-nav > a {
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    padding: 8px 2px;
+    min-height: 56px;
+    min-width: 0;
+    color: #657563;
+    font-size: 10px;
+    text-decoration: none;
+  }
+  .admin-workspace .management-nav > a.active {
+    color: #263e30;
+    background: #edf2e7;
+    box-shadow: none;
+    border-radius: 10px;
+  }
+  .admin-workspace .management-nav svg {
+    width: 21px;
+    height: 21px;
+    flex-shrink: 0;
+  }
+  .admin-workspace .sidebar-bottom {
+    position: fixed;
+    top: max(12px, env(safe-area-inset-top));
+    right: max(14px, env(safe-area-inset-right));
+    z-index: 80;
+    margin: 0;
+    padding: 0;
+  }
+  .admin-workspace .logout-button {
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+    justify-content: center;
+    font-size: 0;
+    padding: 10px;
+    color: #e2c59a;
+    border: 1px solid #ffffff26;
+    border-radius: 10px;
+    background: #22372b;
+  }
+  .admin-workspace .sidebar-bottom [role='alert'] {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    width: min(280px, calc(100vw - 32px));
+    padding: 12px;
+    border-radius: 8px;
+    color: #733f2d;
+    background: #fff3e9;
+    box-shadow: 0 4px 20px #0002;
+  }
+  .admin-workspace .management-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    height: auto;
+    min-height: 72px;
+    padding: calc(14px + env(safe-area-inset-top)) 72px 14px max(18px, env(safe-area-inset-left));
+    background: #18291f;
+    color: #e2c59a;
+    border: 0;
+  }
+  .admin-workspace .admin-mobile-brand {
+    display: block;
+    font-size: 23px;
+    letter-spacing: 0.1em;
+    font-weight: 800;
+    line-height: 1.1;
+  }
+  .admin-workspace .admin-mobile-brand small {
+    display: block;
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    color: #b3c0ab;
+    margin-top: 5px;
+  }
+  .admin-workspace .topbar-account,
+  .admin-workspace .breadcrumb-root,
+  .admin-workspace .breadcrumb > span {
+    display: none;
+  }
+  .admin-workspace .breadcrumb {
+    margin-left: auto;
+    min-width: 0;
+  }
+  .admin-workspace .breadcrumb strong {
+    color: #d8dfcf;
+    font-size: 12px;
+  }
+}

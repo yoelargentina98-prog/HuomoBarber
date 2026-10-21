@@ -36,7 +36,7 @@ export function StaffList({
     <Paginated items={members} source={source}>
       {pageRows => (
         <div className="staff-table-wrapper">
-          <table className="staff-table">
+          <table role="table" className="staff-table">
             <thead>
               <tr>
                 <th scope="col">PERSONA</th>
@@ -52,7 +52,7 @@ export function StaffList({
             <tbody>
               {pageRows.map(member => (
                 <tr key={member.id}>
-                  <td>
+                  <td data-label="Persona">
                     <Link
                       className="staff-person staff-person-link"
                       to={`/admin/personal/${member.id}`}
@@ -73,15 +73,15 @@ export function StaffList({
                       </span>
                     </Link>
                   </td>
-                  <td>
+                  <td data-label="Rol">
                     <span className={`role-tag role-${member.role}`}>
                       {member.role === 'barber' ? 'Barbero' : 'Recepcionista'}
                     </span>
                   </td>
                   {!compact && (
                     <>
-                      <td>{member.username ?? 'Sin asignar'}</td>
-                      <td>{member.phone || '—'}</td>
+                      <td data-label="Usuario">{member.username ?? 'Sin asignar'}</td>
+                      <td data-label="Teléfono">{member.phone || '—'}</td>
                     </>
                   )}
                 </tr>

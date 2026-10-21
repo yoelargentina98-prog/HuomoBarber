@@ -114,7 +114,7 @@ export function CatalogPage() {
             >
               {pageRows => (
                 <div className="staff-table-wrapper">
-                  <table className="staff-table">
+                  <table role="table" className="staff-table">
                     <thead>
                       <tr>
                         <th>SERVICIO</th>
@@ -127,27 +127,27 @@ export function CatalogPage() {
                     <tbody>
                       {pageRows.map(service => (
                         <tr key={service.id}>
-                          <td>
+                          <td data-label="Servicio">
                             <strong>{service.name}</strong>
                             <small className="catalog-detail">
                               {SERVICE_CATEGORIES[service.category as ServiceCategory]}
                               {service.description ? ` · ${service.description}` : ''}
                             </small>
                           </td>
-                          <td>
+                          <td data-label="Tarifas">
                             <button className="text-button" onClick={() => setPricing(service)}>
                               Precios por sucursal
                             </button>
                           </td>
-                          <td>{service.duration_minutes} min</td>
-                          <td>
+                          <td data-label="Duración">{service.duration_minutes} min</td>
+                          <td data-label="Estado">
                             <span
                               className={`role-tag ${service.active ? 'role-barber' : 'role-reception'}`}
                             >
                               {service.active ? 'Activo' : 'Inactivo'}
                             </span>
                           </td>
-                          <td>
+                          <td data-label="Acciones">
                             <div className="catalog-actions">
                               <button className="text-button" onClick={() => setEditing(service)}>
                                 Editar

@@ -76,7 +76,7 @@ export function WeekResults({ rows }: { rows: WeeklyBarber[] }) {
             <Paginated items={rows}>
               {pageRows => (
                 <div className="table-scroll">
-                  <table>
+                  <table role="table">
                     <caption>Desempeño semanal, ordenado por importe generado</caption>
                     <thead>
                       <tr>
@@ -89,12 +89,12 @@ export function WeekResults({ rows }: { rows: WeeklyBarber[] }) {
                     <tbody>
                       {pageRows.map(row => (
                         <tr key={row.employee_id}>
-                          <th scope="row">
+                          <th data-label="Barbero" scope="row">
                             <Link to={`/admin/personal/${row.employee_id}`}>{barberName(row)}</Link>
                           </th>
-                          <td>{row.service_count}</td>
-                          <td>{money(row.revenue_cents)}</td>
-                          <td>{money(row.commission_cents)}</td>
+                          <td data-label="Servicios">{row.service_count}</td>
+                          <td data-label="Generado">{money(row.revenue_cents)}</td>
+                          <td data-label="Comisión">{money(row.commission_cents)}</td>
                         </tr>
                       ))}
                     </tbody>

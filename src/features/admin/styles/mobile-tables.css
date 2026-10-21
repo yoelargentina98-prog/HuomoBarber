@@ -1,0 +1,134 @@
+/* Preserve table semantics and headers; mobile only changes the visual arrangement. */
+@media (max-width: 900px) {
+  .admin-workspace
+    :is(.staff-table-wrapper, .branch-finance-table-scroll, .team-week-ranking .table-scroll) {
+    overflow: visible;
+    min-width: 0;
+  }
+  .admin-workspace table {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    white-space: normal;
+    border: 0;
+  }
+  .admin-workspace table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .admin-workspace table caption {
+    display: block;
+    width: 100%;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .admin-workspace table tbody {
+    display: grid;
+    gap: 14px;
+  }
+  .admin-workspace table tbody > tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 12px;
+    padding: 16px;
+    border: 1px solid #e0e6d8;
+    border-radius: 12px;
+    background: #fcfdf9;
+    min-width: 0;
+  }
+  .admin-workspace table tbody > tr > :is(td, th) {
+    display: block;
+    padding: 0;
+    border: 0;
+    white-space: normal;
+    min-width: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+    text-align: left;
+    color: #40513d;
+  }
+  .admin-workspace table tbody > tr > :is(td, th):first-child,
+  .admin-workspace table tbody > tr > :is(td, th):last-child {
+    grid-column: 1 / -1;
+  }
+  .admin-workspace table tbody > tr > :is(td, th)::before {
+    content: attr(data-label);
+    display: block;
+    color: #7a896f;
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    font-weight: 500;
+    margin-bottom: 5px;
+  }
+  .admin-workspace :is(.table-detail, .catalog-detail, .staff-person small) {
+    max-width: none;
+    font-size: 12px;
+    line-height: 1.55;
+    color: #66735e;
+  }
+  .admin-workspace table [data-label='Importe'],
+  .admin-workspace table [data-label='Comisión'],
+  .admin-workspace table [data-label='Comisión generada'] {
+    font-weight: 600;
+    color: #263e30;
+  }
+  .admin-workspace .staff-person {
+    align-items: flex-start;
+  }
+  .admin-workspace .staff-person > span:last-child {
+    min-width: 0;
+  }
+  .admin-workspace .staff-person strong {
+    font-size: 15px;
+  }
+  .admin-workspace .catalog-actions {
+    flex-wrap: wrap;
+    gap: 10px 20px;
+  }
+  .admin-workspace .role-tag {
+    display: inline-block;
+  }
+  .admin-workspace :is(.service-checklist, .branch-price-row) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .admin-workspace .service-checkbox {
+    padding: 16px;
+  }
+  .admin-workspace .service-checkbox > span {
+    min-width: 0;
+  }
+  .admin-workspace .service-checkbox strong {
+    font-size: 14px;
+  }
+  .admin-workspace .schedule-interval {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+    gap: 10px;
+  }
+  .admin-workspace .schedule-interval label {
+    min-width: 0;
+  }
+  .admin-workspace .schedule-intervals {
+    justify-items: stretch;
+  }
+  .admin-workspace .sale-modal {
+    width: calc(100% - 24px);
+    max-width: 600px;
+    max-height: calc(100dvh - 20px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .admin-workspace .sale-modal > .management-card {
+    padding: 20px;
+  }
+  .admin-workspace .sale-modal .employee-form fieldset {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -62,6 +62,8 @@ una cuenta existente y un perfil con rol admin. Nunca colocar claves secretas en
 
 ## Documentación
 
+- [Administración en mobile](docs/admin-mobile.md).
+
 - [Paginación de todos los listados y tamaños de Caja](docs/pagination.md).
 
 - [Balances y gastos por sucursal](docs/branch-finances.md).

@@ -91,7 +91,7 @@ export function CompensationPanel({
           >
             {pageRows => (
               <div className="staff-table-wrapper">
-                <table className="staff-table">
+                <table role="table" className="staff-table">
                   <thead>
                     <tr>
                       <th>VIGENCIA DESDE</th>
@@ -102,9 +102,9 @@ export function CompensationPanel({
                   <tbody>
                     {pageRows.map(item => (
                       <tr key={item.id}>
-                        <td>{item.effective_from}</td>
-                        <td>{money(item.monthly_fixed_cents)}</td>
-                        <td>{item.commission_percent}%</td>
+                        <td data-label="Vigencia desde">{item.effective_from}</td>
+                        <td data-label="Fijo mensual">{money(item.monthly_fixed_cents)}</td>
+                        <td data-label="Comisión por servicio">{item.commission_percent}%</td>
                       </tr>
                     ))}
                   </tbody>

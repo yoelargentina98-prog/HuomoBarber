@@ -1,0 +1,259 @@
+@media (max-width: 900px) {
+  .admin-workspace .management-content {
+    scroll-margin-top: 88px;
+    padding: 24px max(16px, env(safe-area-inset-right)) 28px max(16px, env(safe-area-inset-left));
+  }
+  .admin-workspace .management-body {
+    padding-bottom: calc(84px + env(safe-area-inset-bottom));
+  }
+  .admin-workspace .management-footer {
+    padding: 18px 16px;
+    flex-wrap: wrap;
+  }
+  .admin-workspace :is(.dashboard-columns, .team-week-highlights) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .admin-workspace
+    :is(.metrics-grid, .branch-finance-totals, .employee-metrics, .team-week-totals) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .admin-workspace .dashboard-stack {
+    gap: 20px;
+  }
+  .admin-workspace .management-card {
+    padding: 20px;
+    border-radius: 14px;
+  }
+  .admin-workspace .page-heading {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .admin-workspace .page-heading h1 {
+    font-size: 28px;
+  }
+  .admin-workspace .section-heading {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .admin-workspace :is(h1, h2, h3, p, a, small, strong, dd) {
+    overflow-wrap: anywhere;
+  }
+  .admin-workspace :is(.page-heading p, .employee-help, .empty-copy, .empty-team p) {
+    font-size: 13px;
+    line-height: 1.65;
+    color: #66735e;
+  }
+  .admin-workspace :is(.action-primary, .action-secondary, .text-button, .text-link) {
+    min-height: 44px;
+    font-size: 13px;
+  }
+  .admin-workspace .page-heading > :is(button, a, label) {
+    width: 100%;
+  }
+  .admin-workspace .management-body :is(input, select, textarea) {
+    min-width: 0;
+    max-width: 100%;
+    font-size: 16px;
+    min-height: 46px;
+  }
+  .admin-workspace input[type='checkbox'] {
+    min-height: 22px;
+    width: 22px;
+    flex-shrink: 0;
+  }
+  .admin-workspace :is(.staff-form, .employee-form fieldset) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .admin-workspace :is(.employee-form label, .staff-form label, .employee-period, .cash-medium) {
+    min-width: 0;
+    font-size: 13px;
+  }
+  .admin-workspace .employee-form .form-wide {
+    grid-column: 1 / -1;
+  }
+  .admin-workspace .employee-form > .action-primary {
+    align-self: stretch;
+  }
+  .admin-workspace .form-actions {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .admin-workspace .form-actions > * {
+    min-width: 0;
+  }
+  .admin-workspace .staff-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .admin-workspace .staff-search {
+    min-width: 0;
+  }
+  .admin-workspace .staff-search input {
+    font-size: 16px;
+  }
+  .admin-workspace .staff-toolbar select {
+    font-size: 16px;
+  }
+  .admin-workspace .employee-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    overflow: visible;
+    border: 0;
+  }
+  .admin-workspace .employee-tabs button {
+    white-space: normal;
+    min-height: 46px;
+    padding: 10px 12px;
+    text-align: left;
+    border: 1px solid #dce4d4;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 12px;
+  }
+  .admin-workspace .employee-tabs button[aria-current] {
+    background: #e9efdf;
+    border-color: #a8b99c;
+  }
+  .admin-workspace .employee-identity {
+    padding: 18px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .admin-workspace .employee-identity > div {
+    min-width: 0;
+    flex: 1 1 160px;
+  }
+  .admin-workspace .employee-identity > .role-tag {
+    margin-left: 0;
+  }
+  .admin-workspace .employee-breakdown > div {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .admin-workspace .employee-breakdown dd {
+    white-space: normal;
+    max-width: 100%;
+  }
+  .admin-workspace .cash-filters {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+  .admin-workspace .cash-filters :is(input, select),
+  .admin-workspace .cash-medium select {
+    width: 100%;
+    font-size: 16px;
+  }
+  .admin-workspace .cash-medium {
+    width: 100%;
+  }
+  .admin-workspace .cash-totals {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+  .admin-workspace .cash-totals article {
+    padding: 20px;
+  }
+  .admin-workspace .team-week-filters {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    align-items: end;
+    gap: 10px;
+  }
+  .admin-workspace .team-week-filters label {
+    min-width: 0;
+  }
+  .admin-workspace .team-week-filters label:last-child,
+  .admin-workspace .team-week-filters > button:nth-of-type(3) {
+    grid-column: 1 / -1;
+  }
+  .admin-workspace .team-week-filters input,
+  .admin-workspace .team-week-filters select {
+    width: 100%;
+    font-size: 16px;
+  }
+  .admin-workspace .team-week-filters > .action-secondary {
+    padding: 10px;
+  }
+  .admin-workspace .branch-finance-leaders {
+    padding: 16px;
+    gap: 16px;
+  }
+  .admin-workspace .branch-finance-leaders p {
+    min-width: 0;
+    flex-basis: 100%;
+  }
+  .admin-workspace .branch-chart-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    margin: 18px 0;
+  }
+  .admin-workspace .branch-chart-row > span {
+    font-size: 12px;
+  }
+  .admin-workspace .branch-chart-row strong {
+    font-size: 13px;
+    max-width: 100%;
+  }
+  .admin-workspace .branch-chart-track {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+  .admin-workspace .void-entry {
+    min-width: 0;
+    width: 100%;
+  }
+  .admin-workspace .employee-editor {
+    padding: 16px;
+  }
+  .admin-workspace .pagination {
+    font-size: 12px;
+    gap: 14px;
+  }
+  .admin-workspace .pagination-actions {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-workspace .metrics-grid,
+  .admin-workspace .branch-finance-totals {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .admin-workspace .dashboard-welcome {
+    padding: 22px;
+  }
+  .admin-workspace .welcome-mark {
+    display: none;
+  }
+  .admin-workspace .metric-card {
+    padding: 18px;
+  }
+  .admin-workspace .metric-card > div > span {
+    font-size: 10px;
+  }
+  .admin-workspace .metric-card > strong {
+    font-size: 32px;
+  }
+}
+
+@media (max-width: 360px) {
+  .admin-workspace .management-card {
+    padding: 16px;
+  }
+  .admin-workspace .employee-metrics,
+  .admin-workspace .team-week-totals {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .admin-workspace .breadcrumb {
+    display: none;
+  }
+}

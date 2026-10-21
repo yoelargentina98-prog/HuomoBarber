@@ -64,7 +64,7 @@ export function ServicesPanel({
           >
             {pageRows => (
               <div className="staff-table-wrapper">
-                <table className="staff-table">
+                <table role="table" className="staff-table">
                   <thead>
                     <tr>
                       <th>FECHA / SERVICIO</th>
@@ -77,7 +77,7 @@ export function ServicesPanel({
                   <tbody>
                     {pageRows.map(item => (
                       <tr key={item.id} className={item.voided_at ? 'entry-voided' : ''}>
-                        <td>
+                        <td data-label="Servicio y fecha">
                           <strong>{item.service_name}</strong>
                           <small className="table-detail">{serviceDate(item.performed_at)}</small>
                           <small className="table-detail">
@@ -85,13 +85,15 @@ export function ServicesPanel({
                           </small>
                           {item.notes && <small className="table-detail">{item.notes}</small>}
                         </td>
-                        <td>{SERVICE_CATEGORIES[item.category as ServiceCategory]}</td>
-                        <td>{money(item.amount_cents)}</td>
-                        <td>
+                        <td data-label="Tipo">
+                          {SERVICE_CATEGORIES[item.category as ServiceCategory]}
+                        </td>
+                        <td data-label="Importe">{money(item.amount_cents)}</td>
+                        <td data-label="Comisión">
                           {money(item.commission_cents ?? 0)}
                           <small className="table-detail">{item.commission_percent}%</small>
                         </td>
-                        <td>
+                        <td data-label="Estado">
                           {item.voided_at ? (
                             <span title={item.void_reason ?? ''}>Anulado</span>
                           ) : (
