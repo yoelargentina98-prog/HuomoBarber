@@ -1,0 +1,272 @@
+.barber-shell {
+  background: #f5f4ee;
+}
+.barber-sidebar {
+  background: #18251f;
+}
+.barber-sidebar-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  padding: 8px 0 30px;
+  margin-bottom: 25px;
+  border-bottom: 1px solid #ffffff12;
+}
+.barber-avatar {
+  width: 68px;
+  height: 68px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #d8c9a5;
+  color: #263c30;
+  font-family: Georgia, serif;
+  font-size: 25px;
+  margin-bottom: 6px;
+  border: 5px solid #ffffff0c;
+  background-clip: padding-box;
+}
+.barber-sidebar-profile strong {
+  font-size: 15px;
+}
+.barber-sidebar-profile > small {
+  color: #9dab9d;
+  font-size: 11px;
+}
+.barber-profession {
+  font-size: 8px;
+  letter-spacing: 0.16em;
+  padding: 5px 9px;
+  color: #d0ba8b;
+  background: #ffffff08;
+  border-radius: 4px;
+  margin-top: 4px;
+}
+.barber-navigation {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.barber-navigation button {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  padding: 13px 14px;
+  background: transparent;
+  color: #aebbaf;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  text-align: left;
+}
+.barber-navigation button:hover {
+  color: white;
+  background: #ffffff07;
+}
+.barber-navigation button[aria-current='page'] {
+  color: #e5d3af;
+  background: #354338;
+  border-left-color: #d7bb85;
+}
+.barber-navigation button small {
+  margin-left: auto;
+  font-size: 9px;
+  color: #a8b4a5;
+}
+.barber-navigation button:focus-visible {
+  outline: 2px solid #ddc79c;
+  outline-offset: 2px;
+}
+.barber-sidebar-bottom {
+  margin-top: auto;
+  padding-top: 30px;
+}
+.barber-branch {
+  padding: 14px 12px;
+  margin-bottom: 18px;
+  background: #ffffff04;
+  border: 1px solid #ffffff10;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #d3bd96;
+}
+.barber-branch small {
+  display: block;
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  color: #8d9b8e;
+  margin-bottom: 5px;
+}
+.barber-branch strong {
+  font-size: 12px;
+  font-weight: 500;
+}
+.barber-sidebar-signature {
+  display: block;
+  padding: 25px 12px 0;
+  font-size: 7px;
+  letter-spacing: 0.18em;
+  color: #768779;
+}
+.barber-topbar-date {
+  font-size: 11px;
+  color: #8a9183;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  text-transform: capitalize;
+}
+.barber-welcome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  background: linear-gradient(115deg, #203d2f, #314c39);
+  border-radius: 12px;
+  padding: 32px 38px;
+  color: #f6f4e9;
+  overflow: hidden;
+  position: relative;
+}
+.barber-welcome .eyebrow {
+  color: #c6bd9c;
+  font-size: 8px;
+  letter-spacing: 0.2em;
+}
+.barber-welcome h1 {
+  color: #f6f4e9;
+  font-family: Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(30px, 3.8vw, 46px);
+  letter-spacing: -0.035em;
+  margin: 12px 0;
+  line-height: 1.15;
+}
+.barber-welcome h1 span {
+  color: #d2b97f;
+}
+.barber-welcome p {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #bbcabb;
+}
+.barber-welcome button {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 18px;
+  padding: 10px 14px;
+  border: 1px solid #e0c69460;
+  background: #e1cda412;
+  color: #ead8b5;
+  border-radius: 5px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 10px;
+}
+.barber-welcome-mark {
+  width: 190px;
+  height: 190px;
+  border: 1px solid #d5c39330;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+  color: #cfbf8a80;
+  flex-shrink: 0;
+  outline: 1px solid #d5c39310;
+  outline-offset: 14px;
+}
+.barber-welcome-mark span {
+  font-size: 7px;
+  letter-spacing: 0.2em;
+}
+.barber-shell .barber-dashboard {
+  margin-top: 24px;
+}
+.barber-shell .barber-dashboard .management-card {
+  border-radius: 10px;
+  box-shadow: 0 2px 8px #24372a03;
+}
+.barber-shell .barber-metrics article {
+  position: relative;
+}
+.barber-metric-icon {
+  position: absolute;
+  right: 23px;
+  top: 22px;
+  opacity: 0.5;
+}
+.barber-shell .barber-metrics article > span {
+  padding-right: 30px;
+}
+@media (max-width: 800px) {
+  .barber-shell.management-app {
+    display: block;
+  }
+  .barber-shell .management-sidebar {
+    position: static;
+    height: auto;
+    min-height: auto;
+    padding: 18px;
+  }
+  .barber-shell .sidebar-brand {
+    padding: 0 0 18px;
+  }
+  .barber-sidebar-profile,
+  .barber-sidebar .nav-caption,
+  .barber-branch,
+  .barber-sidebar-signature {
+    display: none;
+  }
+  .barber-navigation {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 6px;
+  }
+  .barber-navigation button {
+    flex-shrink: 0;
+    padding: 10px 12px;
+  }
+  .barber-sidebar-bottom {
+    padding-top: 6px;
+  }
+  .barber-sidebar-bottom .logout-button {
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+  .barber-topbar-date {
+    font-size: 10px;
+    gap: 8px;
+  }
+  .barber-welcome {
+    padding: 26px;
+  }
+  .barber-welcome-mark {
+    width: 120px;
+    height: 120px;
+  }
+  .barber-welcome-mark svg {
+    width: 60px;
+    height: 60px;
+  }
+  .barber-welcome-mark span {
+    display: none;
+  }
+}
+@media (max-width: 480px) {
+  .barber-welcome-mark {
+    display: none;
+  }
+  .barber-topbar-date {
+    display: none;
+  }
+}

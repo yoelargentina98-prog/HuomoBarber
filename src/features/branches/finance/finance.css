@@ -1,0 +1,186 @@
+.branch-finance-totals {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  margin: 24px 0;
+}
+.branch-finance-totals article {
+  display: grid;
+  gap: 12px;
+  padding: 22px;
+  border: 1px solid #dce4d4;
+  border-radius: 9px;
+  background: #f6f8f0;
+  min-width: 0;
+}
+.branch-finance-totals article:last-child {
+  background: #274331;
+  color: #fff;
+}
+.branch-finance-totals article.negative {
+  background: #7b473f;
+}
+.branch-finance-totals span {
+  font-size: 12px;
+}
+.branch-finance-totals strong {
+  font-size: clamp(20px, 2vw, 28px);
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+.branch-finance-leaders {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+  border: 1px solid #e5deca;
+  background: #faf8f0;
+  border-radius: 8px;
+}
+.branch-finance-leaders p {
+  display: grid;
+  gap: 8px;
+  flex: 1;
+  min-width: 180px;
+}
+.branch-finance-leaders span {
+  color: #8a7957;
+  font-size: 10px;
+}
+.branch-finance-leaders strong {
+  font-size: 17px;
+}
+.branch-finance-leaders small {
+  font-size: 12px;
+}
+.branch-balance-chart {
+  margin: 28px 0 0;
+}
+.branch-balance-chart figcaption {
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+.branch-chart-group {
+  margin-top: 24px;
+  padding-top: 22px;
+  border-top: 1px solid #e5e9de;
+}
+.branch-chart-group .section-heading {
+  margin-bottom: 16px;
+}
+.branch-chart-group a {
+  color: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-underline-offset: 4px;
+}
+.branch-chart-group small {
+  font-size: 10px;
+  color: #849076;
+}
+.branch-chart-row {
+  display: grid;
+  grid-template-columns: 100px minmax(0, 1fr) 145px;
+  gap: 16px;
+  align-items: center;
+  margin: 14px 0;
+}
+.branch-chart-row > span {
+  font-size: 11px;
+  color: #74836a;
+}
+.branch-chart-row strong {
+  font-size: 12px;
+  font-weight: 500;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+.branch-chart-track {
+  position: relative;
+  height: 14px;
+  background: #f1f3ec;
+  border-radius: 4px;
+}
+.branch-chart-track::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -3px;
+  bottom: -3px;
+  width: 1px;
+  background: #bac5ae;
+}
+.branch-chart-track i {
+  position: absolute;
+  height: 100%;
+  border-radius: 3px;
+}
+.branch-chart-track .income {
+  background: #718e64;
+}
+.branch-chart-track .expense {
+  background: #c1a56b;
+}
+.branch-chart-track .balance {
+  background: #284533;
+}
+.branch-chart-track .negative {
+  background: #b16a5e;
+}
+.branch-finance-table-scroll {
+  overflow-x: auto;
+}
+.branch-finance-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.branch-finance-table th,
+.branch-finance-table td {
+  padding: 15px 10px;
+  border-bottom: 1px solid #e4e8dc;
+  text-align: left;
+  vertical-align: top;
+}
+.branch-finance-table small {
+  display: block;
+  font-size: 11px;
+  color: #819074;
+  margin-top: 6px;
+}
+.expense-voided {
+  opacity: 0.6;
+}
+@media (max-width: 750px) {
+  .branch-finance-totals {
+    grid-template-columns: 1fr;
+  }
+  .branch-chart-row {
+    grid-template-columns: 55px minmax(0, 1fr) 100px;
+    gap: 10px;
+  }
+  .branch-chart-row strong {
+    font-size: 11px;
+  }
+}
+.branch-title-link {
+  color: inherit;
+  font: inherit;
+  text-decoration: none;
+}
+.branch-title-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.metrics-grid .form-actions {
+  flex-wrap: wrap;
+}
+.branch-chart-track .commission {
+  background: #8a819e;
+}
+@media (min-width: 751px) and (max-width: 1100px) {
+  .branch-finance-totals {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

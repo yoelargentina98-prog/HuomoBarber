@@ -1,0 +1,6 @@
+@import './styles/layout.css';
+@import './styles/sidebar.css';
+@import './styles/overview.css';
+@import './styles/dashboard.css';
+@import './styles/access.css';
+@import '../staff/staff.css';

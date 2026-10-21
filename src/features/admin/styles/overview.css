@@ -1,0 +1,113 @@
+.dashboard-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.page-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+.page-heading h1 {
+  font-size: clamp(24px, 2.2vw, 32px);
+  margin: 9px 0 8px;
+  font-weight: 650;
+  letter-spacing: -0.045em;
+}
+.page-heading p {
+  font-size: 12px;
+  color: #81897d;
+}
+.date-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #7f887b;
+  font-size: 11px;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+.dashboard-welcome {
+  display: flex;
+  justify-content: space-between;
+  background: #e9eddf;
+  border: 1px solid #dde3d2;
+  border-radius: 10px;
+  padding: 32px 36px;
+  overflow: hidden;
+  position: relative;
+}
+.dashboard-welcome .eyebrow {
+  color: #7a866a;
+}
+.dashboard-welcome h2 {
+  font-size: clamp(25px, 2.4vw, 36px);
+  font-weight: 550;
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+  color: #344332;
+  margin: 15px 0;
+}
+.dashboard-welcome p {
+  font-size: 12px;
+  color: #78816e;
+  max-width: 340px;
+  margin-bottom: 24px;
+  line-height: 1.7;
+}
+.welcome-mark {
+  color: #7d8c66;
+  border: 1px solid #c7d0ba;
+  border-radius: 50%;
+  width: 218px;
+  height: 218px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(-12deg);
+  margin: 6px 32px 0 20px;
+  flex-shrink: 0;
+  outline: 1px solid #d0d9c4;
+  outline-offset: 13px;
+}
+.welcome-mark span {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+}
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+.metric-card {
+  background: white;
+  border: 1px solid #e2e6dc;
+  border-radius: 8px;
+  padding: 23px;
+}
+.metric-card > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #8c977f;
+  gap: 10px;
+}
+.metric-card > div > span {
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+.metric-card > strong {
+  display: block;
+  font-size: 36px;
+  font-weight: 550;
+  letter-spacing: -0.04em;
+  margin: 15px 0 2px;
+}
+.metric-card > p {
+  font-size: 11px;
+  color: #99a08f;
+}

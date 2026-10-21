@@ -1,0 +1,140 @@
+@import '../../../styles/forms.css';
+.barber-dashboard {
+  margin-top: 24px;
+}
+.barber-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+.barber-metrics article {
+  padding: 28px;
+  display: grid;
+  gap: 16px;
+  border: 1px solid #dde4d5;
+  border-radius: 10px;
+  background: #fff;
+}
+.barber-metrics article:first-child {
+  background: #233d2f;
+  color: #fff;
+}
+.barber-metrics span,
+.barber-metrics small {
+  font-size: 12px;
+}
+.barber-metrics strong {
+  font-size: clamp(24px, 3vw, 36px);
+  overflow-wrap: anywhere;
+}
+.barber-week {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+  flex-wrap: wrap;
+}
+.barber-week label {
+  display: grid;
+  gap: 8px;
+  font-size: 12px;
+  color: #64715b;
+}
+.barber-week input {
+  border: 1px solid #dce4d5;
+  border-radius: 5px;
+  padding: 10px;
+  background: #fff;
+  color: inherit;
+  font: inherit;
+}
+.barber-columns {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 22px;
+}
+.barber-table-scroll {
+  overflow-x: auto;
+}
+.barber-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.barber-table th,
+.barber-table td {
+  padding: 15px 10px;
+  border-bottom: 1px solid #e2e7db;
+  text-align: left;
+}
+.barber-table small {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+  color: #74816a;
+  font-weight: 400;
+}
+.barber-table td {
+  white-space: nowrap;
+}
+.barber-fixed p {
+  font-size: 12px;
+  color: #74816a;
+  margin-top: 12px;
+}
+.barber-days {
+  display: grid;
+  gap: 18px;
+}
+.barber-day {
+  display: grid;
+  grid-template-columns: 80px 1fr 90px;
+  gap: 8px;
+  align-items: center;
+  font-size: 11px;
+}
+.barber-day small {
+  grid-column: 2 / -1;
+  color: #74816a;
+}
+.barber-day-track {
+  height: 8px;
+  border-radius: 4px;
+  background: #edf1e5;
+  overflow: hidden;
+}
+.barber-day-track > div {
+  height: 100%;
+  background: #8a9c66;
+  border-radius: 4px;
+}
+@media (max-width: 800px) {
+  .barber-metrics,
+  .barber-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+.barber-dashboard .employee-help {
+  font-size: 12px;
+  color: #74816a;
+  line-height: 1.6;
+}
+.barber-pagination {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid #e2e7db;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.barber-pagination p {
+  font-size: 12px;
+  color: #74816a;
+}
+.barber-pagination > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}

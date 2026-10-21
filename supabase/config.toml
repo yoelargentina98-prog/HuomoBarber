@@ -1,0 +1,10 @@
+project_id = "huomo"
+
+[functions.create-staff]
+import_map = "./functions/deno.json"
+# El handler verifica el JWT con Auth y consulta el rol actual en profiles.
+verify_jwt = false
+
+[functions.update-staff]
+import_map = "./functions/deno.json"
+verify_jwt = false

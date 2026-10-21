@@ -1,0 +1,339 @@
+.barber-mobile-header {
+  display: none;
+}
+@media (max-width: 800px) {
+  .barber-shell {
+    min-width: 0;
+  }
+  .barber-shell *,
+  .barber-shell *::before,
+  .barber-shell *::after {
+    box-sizing: border-box;
+  }
+  .barber-shell .management-body,
+  .barber-shell .management-content,
+  .barber-shell section,
+  .barber-shell article {
+    min-width: 0;
+  }
+  .barber-shell .management-content {
+    padding: 20px 16px calc(104px + env(safe-area-inset-bottom, 0px));
+  }
+  .barber-shell .management-topbar,
+  .barber-shell .management-footer {
+    display: none;
+  }
+  .barber-mobile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: #18251f;
+    color: #e0c7a2;
+    padding: calc(18px + env(safe-area-inset-top, 0px)) 20px 18px;
+  }
+  .barber-mobile-header > div {
+    min-width: 0;
+  }
+  .barber-mobile-header .brand-word {
+    font-size: 26px;
+  }
+  .barber-mobile-header small {
+    display: block;
+    color: #b6c3b5;
+    font-size: 12px;
+    margin-top: 9px;
+    overflow-wrap: anywhere;
+    line-height: 1.5;
+  }
+  .barber-mobile-header button {
+    border: 1px solid #ffffff20;
+    border-radius: 12px;
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+    background: #ffffff08;
+    color: #e0c7a2;
+    display: grid;
+    place-items: center;
+  }
+  .barber-shell .barber-sidebar {
+    padding: 0;
+    background: transparent;
+    min-height: 0;
+    height: 0;
+  }
+  .barber-sidebar > .sidebar-brand,
+  .barber-sidebar-bottom {
+    display: none;
+  }
+  .barber-navigation {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 30;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0;
+    padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px));
+    background: #fff;
+    border-top: 1px solid #e0e6d9;
+    box-shadow: 0 -5px 25px #2034290a;
+    overflow: visible;
+  }
+  .barber-navigation button {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 2px;
+    min-height: 60px;
+    color: #6f7a69;
+    font-size: 10px;
+    text-align: center;
+    border: 0;
+    border-radius: 10px;
+    min-width: 0;
+    line-height: 1.25;
+  }
+  .barber-navigation button > span {
+    overflow-wrap: anywhere;
+  }
+  .barber-navigation button svg {
+    width: 21px;
+    height: 21px;
+    flex-shrink: 0;
+  }
+  .barber-navigation button small {
+    display: none;
+  }
+  .barber-navigation button[aria-current='page'] {
+    color: #24412f;
+    background: #edf2e6;
+  }
+  .barber-navigation button:hover {
+    color: #24412f;
+    background: #edf2e6;
+  }
+  .barber-shell .barber-welcome {
+    padding: 26px 24px;
+    border-radius: 16px;
+  }
+  .barber-welcome > div:first-child {
+    min-width: 0;
+  }
+  .barber-welcome h1 {
+    overflow-wrap: anywhere;
+    font-size: 34px;
+  }
+  .barber-welcome p {
+    display: none;
+  }
+  .barber-welcome button {
+    min-height: 46px;
+    font-size: 13px;
+    padding: 12px 16px;
+  }
+  .barber-shell .barber-welcome-mark {
+    display: none;
+  }
+  .barber-shell .barber-dashboard {
+    margin-top: 18px;
+    gap: 18px;
+  }
+  .barber-shell .management-card {
+    padding: 22px 18px;
+    border-radius: 14px;
+  }
+  .barber-shell .section-heading {
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+  .barber-shell .section-heading > div {
+    min-width: 0;
+  }
+  .barber-shell h2 {
+    font-size: 19px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+  .barber-shell .action-secondary,
+  .barber-shell .action-primary {
+    min-height: 46px;
+    padding: 12px 14px;
+    font-size: 13px;
+    white-space: normal;
+  }
+  .barber-shell .section-heading > .action-secondary {
+    width: 100%;
+  }
+  .barber-week {
+    display: grid;
+    grid-template-columns: 46px minmax(0, 1fr) 46px;
+    gap: 10px;
+    align-items: end;
+  }
+  .barber-week label {
+    min-width: 0;
+    font-size: 12px;
+  }
+  .barber-week input {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 46px;
+    font-size: 16px;
+    padding: 10px 6px;
+  }
+  .barber-week > .action-secondary {
+    padding: 10px 6px;
+  }
+  .barber-week > .action-secondary:last-child {
+    grid-column: 1 / -1;
+  }
+  .barber-metrics {
+    gap: 12px;
+  }
+  .barber-metrics article {
+    padding: 24px;
+    gap: 14px;
+    border-radius: 14px;
+  }
+  .barber-metrics article > strong {
+    font-size: clamp(28px, 8.5vw, 40px);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+  .barber-metrics article:first-child {
+    padding: 28px 24px;
+  }
+  .barber-shell .barber-metrics article > span {
+    font-size: 13px;
+  }
+  .barber-metrics small {
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .barber-fixed h2 {
+    font-size: 30px;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+    margin-top: 10px;
+  }
+  .barber-fixed p {
+    line-height: 1.7;
+    font-size: 13px;
+  }
+  .barber-shell .barber-columns {
+    gap: 18px;
+  }
+  .barber-days {
+    gap: 20px;
+  }
+  .barber-day {
+    grid-template-columns: 62px minmax(0, 1fr) 78px;
+    font-size: 12px;
+  }
+  .barber-day strong {
+    overflow-wrap: anywhere;
+  }
+  .barber-day small {
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+  .barber-table-scroll {
+    overflow: visible;
+  }
+  .barber-table,
+  .barber-table tbody {
+    display: block;
+    width: 100%;
+  }
+  .barber-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .barber-table tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 12px;
+    padding: 20px 0;
+    border-bottom: 1px solid #e1e7d9;
+  }
+  .barber-table tr:first-child {
+    padding-top: 0;
+  }
+  .barber-table tr:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+  .barber-table th,
+  .barber-table td {
+    display: block;
+    border: 0;
+    padding: 0;
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .barber-table th {
+    grid-column: 1 / -1;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+  .barber-table td {
+    font-size: 17px;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.5;
+  }
+  .barber-table td::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 11px;
+    color: #6c7b62;
+    margin-bottom: 6px;
+    font-weight: 400;
+  }
+  .barber-table td:last-child {
+    padding: 10px;
+    background: #f0f5e9;
+    border-radius: 8px;
+    color: #24412f;
+  }
+  .barber-table .barber-count-cell {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    font-size: 14px;
+  }
+  .barber-table .barber-count-cell::before {
+    margin: 0;
+    font-size: 12px;
+  }
+  .barber-table small {
+    font-size: 12px;
+    line-height: 1.7;
+  }
+  .barber-shell button,
+  .barber-shell input {
+    touch-action: manipulation;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .barber-shell * {
+    scroll-behavior: auto;
+  }
+}

@@ -1,0 +1,140 @@
+.admin-access {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  min-height: 100vh;
+  background: #fbfcf8;
+}
+.access-story {
+  background: #1b2921;
+  color: #e3d2b5;
+  padding: 54px 10%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100vh;
+}
+.access-story > div {
+  padding: 70px 0;
+}
+.access-story .eyebrow {
+  color: #9aa88b;
+  font-size: 9px;
+}
+.access-story h1 {
+  font-size: clamp(32px, 3.7vw, 58px);
+  letter-spacing: -0.055em;
+  font-weight: 500;
+  color: #f3f1e8;
+  line-height: 1.15;
+  margin: 28px 0;
+}
+.access-story h1 em {
+  color: #b6bf9d;
+  font-style: normal;
+}
+.access-story p {
+  color: #9ca995;
+  max-width: 340px;
+  font-size: 13px;
+  line-height: 1.9;
+}
+.access-story-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 8px;
+  color: #87977f;
+  letter-spacing: 0.16em;
+  padding-top: 22px;
+  border-top: 1px solid #3c493a;
+  gap: 16px;
+}
+.access-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  position: relative;
+}
+.access-form {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.access-form h2 {
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  margin-bottom: -12px;
+}
+.access-form > p {
+  font-size: 12px;
+  margin-bottom: 12px;
+  color: #92998b;
+}
+.access-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: #59634f;
+  font-size: 12px;
+  font-weight: 500;
+}
+.access-form input {
+  width: 100%;
+  padding: 14px;
+  min-height: 48px;
+  font: inherit;
+  background: white;
+  color: #253123;
+  border: 1px solid #dfe5d6;
+  border-radius: 5px;
+}
+.access-form input::placeholder {
+  color: #a4ad9c;
+}
+.access-form .action-primary {
+  margin-top: 6px;
+  justify-content: space-between;
+}
+.access-form .access-note {
+  text-align: center;
+  font-size: 10px;
+}
+.access-copyright {
+  position: absolute;
+  bottom: 26px;
+  font-size: 10px;
+  color: #a2a995;
+}
+.inline-error {
+  border: 1px solid #e5cfc1;
+  background: #fff3ed;
+  color: #945b42 !important;
+  padding: 12px;
+  border-radius: 5px;
+  font-size: 12px;
+}
+@media (max-width: 700px) {
+  .admin-access {
+    display: flex;
+    flex-direction: column;
+  }
+  .access-story {
+    min-height: auto;
+    padding: 30px 24px;
+  }
+  .access-story > div {
+    display: none;
+  }
+  .access-story-footer {
+    display: none;
+  }
+  .access-panel {
+    flex: 1;
+    min-height: 560px;
+    padding: 40px 24px 70px;
+  }
+}

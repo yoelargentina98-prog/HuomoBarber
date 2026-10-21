@@ -1,0 +1,35 @@
+.schedule-panel .employee-form > fieldset {
+  display: block;
+}
+.schedule-panel .employee-form .schedule-day {
+  display: block;
+  border: 1px solid var(--border, #dce2d8) !important;
+  border-radius: 10px;
+  padding: 16px !important;
+  margin: 12px 0 !important;
+  min-width: 0;
+}
+.schedule-day legend {
+  padding: 0 8px;
+  font-weight: 700;
+}
+.schedule-intervals {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+}
+.schedule-interval {
+  display: flex;
+  gap: 16px;
+  align-items: end;
+  flex-wrap: wrap;
+}
+.schedule-interval label {
+  min-width: 120px;
+}
+.schedule-exceptions {
+  margin: 28px 0;
+}
+.schedule-exceptions > .schedule-day > .text-link {
+  margin-top: 16px;
+}

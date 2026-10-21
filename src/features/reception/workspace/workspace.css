@@ -1,0 +1,372 @@
+.reception-workspace {
+  background: #f5f4ef;
+}
+.reception-workspace .management-sidebar {
+  background: #1a2821;
+}
+.reception-workspace .workspace-label {
+  margin-bottom: 30px;
+}
+.reception-workspace .workspace-label strong {
+  font-size: 12px;
+}
+.reception-nav button {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: #abb8ac;
+  padding: 13px 14px;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+.reception-nav button:hover {
+  background: #ffffff08;
+  color: #fff;
+}
+.reception-nav button[aria-current='page'] {
+  background: #354738;
+  border-left-color: #d4bb8b;
+  color: #e3d0ab;
+}
+.reception-nav button:focus-visible {
+  outline: 2px solid #dcc699;
+  outline-offset: 2px;
+}
+.reception-nav button small {
+  margin-left: auto;
+  font-size: 9px;
+}
+.reception-date {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 11px;
+  color: #82907e;
+  text-transform: capitalize;
+}
+.reception-branch-label {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 16px 12px;
+  color: #d6c19a;
+  border: 1px solid #ffffff10;
+  border-radius: 7px;
+  margin-bottom: 20px;
+}
+.reception-branch-label small {
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  color: #90a18f;
+  display: block;
+  margin-bottom: 7px;
+}
+.reception-branch-label strong {
+  font-size: 12px;
+  font-weight: 500;
+}
+.reception-welcome {
+  background: linear-gradient(110deg, #24402f, #3c5140);
+  color: #f5f2e6;
+  padding: 34px 38px;
+  border-radius: 12px;
+  margin-bottom: 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+.reception-welcome .eyebrow {
+  color: #cbbb95;
+  font-size: 8px;
+  letter-spacing: 0.17em;
+}
+.reception-welcome h1 {
+  font-family: Georgia, serif;
+  color: #f5f2e6;
+  font-size: clamp(30px, 3.7vw, 46px);
+  font-weight: 400;
+  margin: 14px 0;
+}
+.reception-welcome p {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #bdcbbb;
+}
+.reception-welcome-branch {
+  padding: 22px 32px;
+  border: 1px solid #d9ca9d44;
+  border-radius: 9px;
+  display: grid;
+  gap: 12px;
+  min-width: 170px;
+}
+.reception-welcome-branch span,
+.reception-welcome-branch small {
+  font-size: 8px;
+  letter-spacing: 0.15em;
+  color: #c3bb9b;
+}
+.reception-welcome-branch strong {
+  font-family: Georgia, serif;
+  font-weight: 400;
+  font-size: 26px;
+}
+.reception-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+.reception-metrics article {
+  padding: 22px;
+  border: 1px solid #dfe6d7;
+  border-radius: 9px;
+  display: grid;
+  gap: 14px;
+  background: #fff;
+}
+.reception-metrics article:nth-child(2) {
+  background: #294432;
+  color: #fff;
+}
+.reception-metrics span {
+  font-size: 11px;
+}
+.reception-metrics strong {
+  font-size: clamp(20px, 2.2vw, 28px);
+  overflow-wrap: anywhere;
+}
+.reception-metrics small {
+  font-size: 10px;
+  opacity: 0.65;
+  line-height: 1.6;
+}
+.reception-columns {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 20px;
+}
+.reception-columns .action-primary {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 20px;
+}
+.reception-pending {
+  border-top: 1px solid #e4e8dd;
+  margin-top: 24px;
+  padding-top: 20px;
+}
+.reception-pending > div {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+}
+.reception-pending span {
+  font-size: 12px;
+  color: #74836d;
+}
+.reception-pending strong {
+  font-size: 22px;
+}
+.reception-team-preview {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.reception-team-preview li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #edf0e7;
+  padding: 14px 0;
+}
+.reception-team-preview strong {
+  display: block;
+  font-size: 12px;
+}
+.reception-team-preview small {
+  display: block;
+  font-size: 10px;
+  color: #83907c;
+  margin-top: 5px;
+}
+.reception-team-preview .online-dot {
+  margin-left: auto;
+}
+.reception-initials {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #f0ede0;
+  color: #9e8353;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.reception-team-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 24px;
+}
+.reception-person {
+  border: 1px solid #e0e6d8;
+  padding: 22px;
+  border-radius: 10px;
+  min-width: 0;
+  background: #fcfcf9;
+}
+.reception-person-heading {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+.reception-person h3 {
+  font-size: 16px;
+  overflow-wrap: anywhere;
+}
+.reception-person > p {
+  font-size: 11px;
+  color: #82907b;
+  margin-top: 6px;
+}
+.reception-status {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 10px;
+  margin-top: 16px;
+  color: #5b7951;
+}
+.reception-status > span {
+  width: 5px;
+  height: 5px;
+  background: currentColor;
+  border-radius: 50%;
+}
+.reception-status.inactive {
+  color: #9b846d;
+}
+.reception-services {
+  border-top: 1px solid #e6eade;
+  margin-top: 18px;
+  padding-top: 16px;
+}
+.reception-services > small {
+  display: block;
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  color: #8b947d;
+  margin-bottom: 10px;
+}
+.reception-services > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.reception-services span {
+  font-size: 10px;
+  background: #eaf0e2;
+  color: #5d7150;
+  padding: 6px 8px;
+  border-radius: 4px;
+}
+.reception-services p {
+  font-size: 11px;
+  color: #8b947d;
+}
+.reception-workspace .employee-help {
+  font-size: 12px;
+  color: #7a886e;
+  line-height: 1.7;
+}
+.reception-branch-select {
+  margin-bottom: 22px;
+}
+.reception-branch-select label {
+  display: grid;
+  gap: 8px;
+  font-size: 12px;
+  max-width: 320px;
+}
+.reception-branch-select select {
+  padding: 12px;
+  font: inherit;
+  border: 1px solid #dce3d4;
+  border-radius: 6px;
+  background: #fff;
+}
+@media (max-width: 1100px) {
+  .reception-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .reception-team-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 800px) {
+  .reception-workspace.management-app {
+    display: block;
+  }
+  .reception-workspace .management-sidebar {
+    position: static;
+    height: auto;
+    min-height: auto;
+    padding: 18px;
+  }
+  .reception-workspace .sidebar-brand {
+    padding-bottom: 18px;
+  }
+  .reception-workspace .workspace-label,
+  .reception-workspace .nav-caption,
+  .reception-branch-label {
+    display: none;
+  }
+  .reception-nav.management-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+  .reception-nav button {
+    flex-shrink: 0;
+  }
+  .reception-workspace .sidebar-bottom {
+    margin-top: 12px;
+  }
+  .reception-date {
+    font-size: 10px;
+    gap: 8px;
+  }
+  .reception-welcome {
+    padding: 24px;
+  }
+  .reception-welcome-branch {
+    padding: 16px;
+    min-width: 110px;
+  }
+  .reception-columns {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 480px) {
+  .reception-metrics,
+  .reception-team-grid {
+    grid-template-columns: 1fr;
+  }
+  .reception-date {
+    display: none;
+  }
+  .reception-welcome-branch {
+    display: none;
+  }
+}

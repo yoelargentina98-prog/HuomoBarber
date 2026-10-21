@@ -1,0 +1,84 @@
+.catalog-actions {
+  display: flex;
+  gap: 18px;
+}
+.branch-price-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 18px;
+  border: 1px solid #e1e6d9;
+  border-radius: 7px;
+}
+.employee-form .branch-available {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+.employee-form .branch-available input {
+  width: 18px;
+  height: 18px;
+  min-height: 18px;
+  accent-color: #577446;
+}
+@media (max-width: 700px) {
+  .branch-price-row {
+    grid-template-columns: 1fr;
+  }
+}
+.catalog-detail {
+  display: block;
+  max-width: 300px;
+  white-space: normal;
+  font-size: 10px;
+  color: #97a187;
+  margin-top: 6px;
+}
+.service-checklist {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.employee-form .service-checkbox {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid #dfe6d6;
+  border-radius: 7px;
+  cursor: pointer;
+  background: #fcfdf9;
+}
+.employee-form .service-checkbox:has(input:checked) {
+  background: #eef3e6;
+  border-color: #a8bc92;
+}
+.employee-form .service-checkbox input {
+  width: 18px;
+  min-height: 18px;
+  height: 18px;
+  margin: 1px 0 0;
+  padding: 0;
+  accent-color: #577446;
+  flex-shrink: 0;
+}
+.service-checkbox strong {
+  font-size: 12px;
+  color: #526342;
+}
+.service-checkbox small {
+  display: block;
+  margin-top: 6px;
+  line-height: 1.6;
+  color: #8b977c;
+}
+.service-inactive {
+  opacity: 0.65;
+}
+@media (max-width: 700px) {
+  .service-checklist {
+    grid-template-columns: 1fr;
+  }
+}

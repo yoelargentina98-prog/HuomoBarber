@@ -1,0 +1,125 @@
+.cash-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+.cash-filters label,
+.cash-medium {
+  display: grid;
+  gap: 8px;
+  color: #64715b;
+  font-size: 12px;
+}
+.cash-filters input,
+.cash-filters select,
+.cash-medium select {
+  font: inherit;
+  color: #263522;
+  padding: 10px 12px;
+  border: 1px solid #dfe4d7;
+  border-radius: 5px;
+  background: white;
+}
+.cash-totals {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 22px 0;
+}
+.cash-totals article {
+  display: grid;
+  gap: 12px;
+  padding: 24px;
+  border: 1px solid #dce4d5;
+  border-radius: 8px;
+  background: #f5f7ef;
+}
+.cash-totals article:first-child {
+  background: #263d30;
+  color: white;
+}
+.cash-totals span,
+.cash-totals small {
+  font-size: 12px;
+}
+.cash-totals strong {
+  font-size: clamp(20px, 2vw, 28px);
+  overflow-wrap: anywhere;
+}
+.cash-method {
+  display: inline-block;
+  padding: 6px 9px;
+  font-size: 11px;
+  border-radius: 5px;
+  background: #eef4e6;
+  color: #426334;
+}
+.cash-method-transfer {
+  background: #eaf0f7;
+  color: #3e5978;
+}
+.cash-page .staff-table caption {
+  text-align: left;
+  padding-bottom: 16px;
+}
+.cash-page .staff-table .void-entry {
+  white-space: normal;
+}
+.cash-page .staff-table a {
+  color: inherit;
+}
+@media (max-width: 800px) {
+  .cash-totals {
+    grid-template-columns: 1fr;
+  }
+}
+.reception-body {
+  grid-column: 1 / -1;
+  width: 100%;
+  margin-left: 0;
+}
+.sale-modal {
+  border: 0;
+  border-radius: 14px;
+  padding: 0;
+  margin: auto;
+  width: min(720px, calc(100vw - 32px));
+  max-height: calc(100dvh - 48px);
+  color: #263522;
+  background: #fff;
+  box-shadow: 0 24px 100px #0005;
+}
+.sale-modal::backdrop {
+  background: #10231b66;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.sale-modal > .management-card {
+  margin: 0;
+  border: 0;
+}
+.sale-modal .cash-medium {
+  margin-bottom: 24px;
+}
+.sale-setup {
+  margin-top: 24px;
+  padding: 20px;
+  border: 1px solid #e7dbbf;
+  background: #faf8f1;
+  border-radius: 8px;
+}
+.sale-setup p {
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 12px 0;
+}
+.sale-setup-barber {
+  padding: 12px 0;
+  border-top: 1px solid #e7e1d2;
+  margin: 16px 0;
+}
+.sale-setup .form-actions {
+  flex-wrap: wrap;
+}
