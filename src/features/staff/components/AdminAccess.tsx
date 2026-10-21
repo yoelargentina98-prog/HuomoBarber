@@ -17,6 +17,7 @@ export function AdminAccess({ onSuccess }: { onSuccess: () => void }) {
       form.reset();
       if (role === 'reception') navigate('/recepcion', { replace: true });
       else if (role === 'barber') navigate('/barbero', { replace: true });
+      else if (role === 'client') navigate('/cliente', { replace: true });
       else onSuccess();
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'No se pudo ingresar.');

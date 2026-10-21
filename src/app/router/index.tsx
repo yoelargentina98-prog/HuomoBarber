@@ -5,26 +5,64 @@ import { BookingHomePage } from '../../features/booking/pages/BookingHomePage';
 import { NotFoundPage } from '../../features/notFound/pages/NotFoundPage';
 import { RouteFailure } from '../../shared/components/RouteFailure';
 
+import { WelcomeAccess } from '../../features/auth/components/WelcomeAccess';
+
 export const routesConfig: RouteObject[] = [
   {
     path: '/',
     errorElement: <RouteFailure />,
     element: <RootLayout />,
     children: [
-      // Reserva mínima de la raíz; la landing se desarrollará en otro alcance.
       {
         index: true,
-        element: (
-          <div className="site-pending">
-            <span>HUOMO</span>
-            <p>Sitio en preparación.</p>
-          </div>
-        ),
+        element: <WelcomeAccess />,
       },
       {
         path: 'reservar',
         element: <PublicLayout />,
         children: [{ index: true, element: <BookingHomePage /> }],
+      },
+      { path: '*', element: <NotFoundPage /> },
+    ],
+  },
+  {
+    path: '/cliente',
+    errorElement: <RouteFailure />,
+    lazy: async () => ({ Component: (await import('../layouts/ClientLayout')).ClientLayout }),
+    children: [
+      {
+        index: true,
+        lazy: async () => ({
+          Component: (await import('../../features/client/pages/ClientHomePage')).ClientHomePage,
+        }),
+      },
+      {
+        path: 'reservar',
+        lazy: async () => ({
+          Component: (await import('../../features/client/pages/ClientBookingWizard'))
+            .ClientBookingWizard,
+        }),
+      },
+      {
+        path: 'turnos',
+        lazy: async () => ({
+          Component: (await import('../../features/client/pages/ClientAppointmentsPage'))
+            .ClientAppointmentsPage,
+        }),
+      },
+      {
+        path: 'sucursales',
+        lazy: async () => ({
+          Component: (await import('../../features/client/pages/ClientBranchesPage'))
+            .ClientBranchesPage,
+        }),
+      },
+      {
+        path: 'perfil',
+        lazy: async () => ({
+          Component: (await import('../../features/client/pages/ClientProfilePage'))
+            .ClientProfilePage,
+        }),
       },
       { path: '*', element: <NotFoundPage /> },
     ],
@@ -61,6 +99,13 @@ export const routesConfig: RouteObject[] = [
       {
         path: 'caja',
         lazy: async () => ({ Component: (await import('../../features/cash/CashPage')).CashPage }),
+      },
+      {
+        path: 'turnos',
+        lazy: async () => ({
+          Component: (await import('../../features/admin/pages/AdminAppointmentsPage'))
+            .AdminAppointmentsPage,
+        }),
       },
       {
         path: 'personal/:employeeId',

@@ -8,6 +8,7 @@ import { RecentServices } from './RecentServices';
 import './dashboard.css';
 import { AdminIcon } from '../../admin/components/AdminIcon';
 import { barberSections, type BarberSection } from '../components/model';
+import { BarberAgenda } from './BarberAgenda';
 export function BarberDashboard({
   employeeId,
   section = 'overview',
@@ -150,14 +151,7 @@ export function BarberDashboard({
           {['overview', 'agenda'].includes(section) && (
             <div className={section === 'overview' ? 'barber-columns' : undefined}>
               {section === 'overview' && <WeeklyActivity days={data.days} />}
-              <section className="management-card">
-                <span className="eyebrow">MI AGENDA</span>
-                <h2>Próximos turnos</h2>
-                <p className="empty-copy">
-                  La agenda todavía no está habilitada. Cuando se implemente, acá vas a ver
-                  únicamente tus turnos asignados.
-                </p>
-              </section>
+              <BarberAgenda />
             </div>
           )}
           {section === 'overview' && <ServiceBreakdown services={data.services} />}

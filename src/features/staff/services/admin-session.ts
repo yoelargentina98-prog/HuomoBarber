@@ -1,6 +1,7 @@
 import { requireSupabaseClient } from '../../../integrations/supabase/client';
 import { loginEmail } from './login-identity';
 import { cashOperator } from '../../cash/sales/service';
+import type { AppRole, ClientProfile } from '../../appointments/model/types';
 
 export async function hasAdminSession(): Promise<boolean> {
   const client = requireSupabaseClient();
@@ -17,36 +18,175 @@ export async function hasAdminSession(): Promise<boolean> {
   return data?.role === 'admin';
 }
 
-export async function signInAdmin(
-  identity: string,
-  password: string
-): Promise<'admin' | 'reception' | 'barber'> {
+export async function signInUnified(identity: string, password: string): Promise<AppRole> {
   const client = requireSupabaseClient();
-  const { error } = await client.auth.signInWithPassword({ email: loginEmail(identity), password });
+  const normalizedEmail = loginEmail(identity);
+  const { error } = await client.auth.signInWithPassword({
+    email: normalizedEmail,
+    password,
+  });
   if (error) throw new Error('No se pudo ingresar. Revisá el usuario o email y la contraseña.');
+
   try {
-    if (await hasAdminSession()) return 'admin';
     const {
       data: { user },
     } = await client.auth.getUser();
-    if (!user) throw new Error('No se pudo verificar la sesión.');
+    if (!user) throw new Error('No se pudo verificar la sesión iniciada.');
+
     const { data: profile, error: profileError } = await client
       .from('profiles')
-      .select('role')
+      .select('role, full_name, phone')
       .eq('id', user.id)
       .single();
-    if (profileError) throw new Error('No se pudo verificar el perfil.');
+
+    if (profileError || !profile) {
+      // Si el perfil aún no existe y el email no es de staff, es cliente
+      return 'client';
+    }
+
+    if (profile.role === 'admin') return 'admin';
     if (profile.role === 'barber') {
       const { error } = await client.rpc('get_barber_portal');
       if (error) throw new Error(error.message);
       return 'barber';
     }
-    const operator = await cashOperator();
-    if (operator?.role === 'reception') return 'reception';
-    throw new Error('Esta cuenta no tiene acceso a administración o recepción.');
+    if (profile.role === 'reception') {
+      const operator = await cashOperator();
+      if (operator?.role === 'reception') return 'reception';
+      throw new Error('Esta cuenta no tiene asignada una sucursal activa.');
+    }
+    if (profile.role === 'client') {
+      return 'client';
+    }
+
+    // Por defecto clientes
+    return 'client';
   } catch (cause) {
     await client.auth.signOut();
     throw cause;
+  }
+}
+
+/** Retrocompatibilidad para llamadas existentes en portales de administración */
+export const signInAdmin = signInUnified;
+
+export async function signUpClient(params: {
+  fullName: string;
+  email: string;
+  phone: string;
+  password: string;
+}): Promise<{ user: { id: string; email?: string } | null; requiresEmailConfirmation: boolean }> {
+  const client = requireSupabaseClient();
+  const fullName = params.fullName.trim();
+  const email = params.email.trim().toLowerCase();
+  const phone = params.phone.trim();
+  const password = params.password;
+
+  if (fullName.length < 2) {
+    throw new Error('Ingresá tu nombre y apellido completo.');
+  }
+  if (!email.includes('@') || email.length < 5) {
+    throw new Error('Ingresá un correo electrónico válido.');
+  }
+  if (password.length < 6) {
+    throw new Error('La contraseña debe tener al menos 6 caracteres.');
+  }
+
+  const { data, error } = await client.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        full_name: fullName,
+        phone,
+      },
+    },
+  });
+
+  if (error) {
+    if (
+      error.message.toLowerCase().includes('already registered') ||
+      error.message.toLowerCase().includes('duplicate')
+    ) {
+      throw new Error('Ya existe una cuenta registrada con este correo electrónico.');
+    }
+    throw new Error(error.message || 'No se pudo crear la cuenta.');
+  }
+
+  const requiresEmailConfirmation = !data.session;
+  return { user: data.user, requiresEmailConfirmation };
+}
+
+export async function requestPasswordReset(email: string): Promise<void> {
+  const client = requireSupabaseClient();
+  const normalized = email.trim().toLowerCase();
+  if (!normalized.includes('@')) {
+    throw new Error('Ingresá un correo electrónico válido.');
+  }
+  const { error } = await client.auth.resetPasswordForEmail(normalized, {
+    redirectTo: `${window.location.origin}/`,
+  });
+  if (error) {
+    throw new Error('No se pudo enviar el enlace de recuperación. Intentá nuevamente.');
+  }
+}
+
+export async function getCurrentUserProfile(): Promise<ClientProfile | null> {
+  const client = requireSupabaseClient();
+  const {
+    data: { session },
+  } = await client.auth.getSession();
+  if (!session?.user) return null;
+
+  const { data, error } = await client
+    .from('profiles')
+    .select('id, role, full_name, phone')
+    .eq('id', session.user.id)
+    .single();
+
+  if (error || !data) {
+    return {
+      id: session.user.id,
+      email: session.user.email ?? '',
+      fullName: session.user.user_metadata?.full_name ?? '',
+      phone: session.user.user_metadata?.phone ?? '',
+      role: 'client',
+    };
+  }
+
+  return {
+    id: data.id,
+    email: session.user.email ?? '',
+    fullName: data.full_name ?? '',
+    phone: data.phone ?? '',
+    role: data.role ?? 'client',
+  };
+}
+
+export async function updateClientProfile(fields: {
+  fullName: string;
+  phone: string;
+}): Promise<void> {
+  const client = requireSupabaseClient();
+  const {
+    data: { user },
+  } = await client.auth.getUser();
+  if (!user) throw new Error('No hay sesión activa.');
+
+  const fullName = fields.fullName.trim();
+  const phone = fields.phone.trim();
+
+  if (fullName.length < 2) {
+    throw new Error('Ingresá un nombre válido.');
+  }
+
+  const { error } = await client
+    .from('profiles')
+    .update({ full_name: fullName, phone })
+    .eq('id', user.id);
+
+  if (error) {
+    throw new Error('No se pudieron guardar los cambios en tu perfil.');
   }
 }
 
@@ -57,7 +197,6 @@ export async function signOutAdmin(): Promise<void> {
 
 export function onSessionChange(callback: () => void): () => void {
   const { data } = requireSupabaseClient().auth.onAuthStateChange(() => {
-    // Evitar consultas a Auth dentro de su callback síncrono.
     queueMicrotask(callback);
   });
   return () => data.subscription.unsubscribe();

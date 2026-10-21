@@ -7,6 +7,7 @@ import { ReceptionTeam } from './ReceptionTeam';
 import { ReceptionSummary } from './ReceptionSummary';
 import { ReceptionShell } from './ReceptionShell';
 import type { ReceptionSection } from './model';
+import { ReceptionAgenda } from '../agenda/ReceptionAgenda';
 import '../../staff/staff.css';
 import '../../../styles/forms.css';
 export function ReceptionWorkspace({
@@ -135,18 +136,13 @@ export function ReceptionWorkspace({
           )}
         </>
       )}
-      {section === 'agenda' && (
-        <section className="management-card">
-          <span className="eyebrow">PRÓXIMAMENTE</span>
-          <h1>Agenda de la sucursal</h1>
-          <p className="empty-copy">
-            La agenda todavía está en preparación. Mientras tanto, podés registrar los servicios
-            realizados y sus pagos desde Caja.
-          </p>
-          <button className="action-primary" onClick={() => openCash(false)}>
-            Ir a Caja
-          </button>
-        </section>
+      {section === 'agenda' && branch && (
+        <ReceptionAgenda
+          branchId={branch}
+          branchName={
+            operator.branchName || branches.find(b => b.id === branch)?.name || 'Sucursal'
+          }
+        />
       )}
     </ReceptionShell>
   );

@@ -25,11 +25,13 @@ describe('Separación del sitio público y administración', () => {
     vi.mocked(hasAdminSession).mockResolvedValue(false);
     vi.mocked(listStaff).mockResolvedValue([]);
   });
-  it('reserva la raíz sin hub ni enlaces a accesos internos', () => {
+  it('presenta la pantalla de bienvenida con acceso unificado sin selector de rol', () => {
     renderRoute('/');
-    expect(screen.getByText('Sitio en preparación.')).toBeInTheDocument();
-    expect(screen.queryByRole('link')).not.toBeInTheDocument();
-    expect(screen.queryByLabelText(/contraseña/i)).not.toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Iniciar sesión/i })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Crear cuenta/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Ingresar al sistema/i })).toBeInTheDocument();
+    expect(screen.getByLabelText(/Usuario o email/i)).toBeInTheDocument();
+    expect(screen.queryByRole('combobox', { name: /rol/i })).not.toBeInTheDocument();
   });
   it.each([
     '/admin',

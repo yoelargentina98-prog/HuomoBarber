@@ -47,8 +47,7 @@ it('muestra servicios asignados y comisión sin presentar fijo cuando no existe'
   expect(screen.getByText('Corte')).toBeInTheDocument();
   expect(screen.getByText('Barba')).toBeInTheDocument();
   expect(screen.queryByText('FIJO MENSUAL')).not.toBeInTheDocument();
-  expect(screen.getByText('Próximos turnos')).toBeInTheDocument();
-  expect(screen.getByText(/La agenda todavía no está habilitada/)).toBeInTheDocument();
+  expect(screen.getByText('Mi agenda de turnos')).toBeInTheDocument();
 });
 it('oculta fijo cero y muestra un fijo positivo con su mes', async () => {
   vi.mocked(loadBarberDashboard)

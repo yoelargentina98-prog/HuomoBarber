@@ -60,11 +60,10 @@ export function AdminShell({ children, leaving, logoutError, onLogout }: AdminSh
             <AdminIcon name="wallet" />
             Caja
           </NavLink>
-          <p className="nav-caption nav-future">PRÓXIMOS MÓDULOS</p>
-          <span className="nav-unavailable">
+          <NavLink to={APP_ROUTES.ADMIN_APPOINTMENTS}>
             <AdminIcon name="calendar" />
-            Agenda<small>Pronto</small>
-          </span>
+            Turnos y Agenda
+          </NavLink>
         </nav>
         <div className="sidebar-bottom">
           <div className="admin-identity">
