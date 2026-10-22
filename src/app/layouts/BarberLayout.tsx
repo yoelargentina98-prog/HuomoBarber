@@ -1,6 +1,6 @@
 import type { BarberProfile, BarberSection } from '../../features/barber/components/model';
 import { useEffect, useState } from 'react';
-import { AdminAccess } from '../../features/staff/components/AdminAccess';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { onSessionChange, signOutAdmin } from '../../features/staff/services/admin-session';
 import { requireSupabaseClient } from '../../integrations/supabase/client';
 import '../../features/admin/admin.css';
@@ -8,6 +8,7 @@ import { BarberDashboard } from '../../features/barber/dashboard/BarberDashboard
 import { BarberShell } from '../../features/barber/components/BarberShell';
 import { NativeBridge } from '../../shared/native/NativeBridge';
 export function BarberLayout() {
+  const navigate = useNavigate();
   const [section, setSection] = useState<BarberSection>('overview');
   const [revision, setRevision] = useState(0);
   const [state, setState] = useState<{
@@ -61,7 +62,7 @@ export function BarberLayout() {
     setLogoutError('');
     try {
       await signOutAdmin();
-      setRevision(value => value + 1);
+      navigate('/', { replace: true });
     } catch {
       setLogoutError('No se pudo cerrar la sesión.');
     } finally {
@@ -74,7 +75,7 @@ export function BarberLayout() {
         <p role="status">Verificando acceso…</p>
       </main>
     );
-  if (state.guest) return <AdminAccess onSuccess={() => setRevision(value => value + 1)} />;
+  if (state.guest) return <Navigate to="/" replace />;
   if (!state.profile)
     return (
       <main className="admin-loading">

@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { ReceptionWorkspace } from '../../features/reception/workspace/ReceptionWorkspace';
-import { ReceptionAccess } from '../../features/reception/ReceptionAccess';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useReceptionAccess } from '../../features/reception/useReceptionAccess';
 import { signOutAdmin } from '../../features/staff/services/admin-session';
 import { NativeBridge } from '../../shared/native/NativeBridge';
 import '../../features/admin/admin.css';
 export function ReceptionLayout() {
   const access = useReceptionAccess();
+  const navigate = useNavigate();
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   async function logout() {
@@ -14,7 +15,7 @@ export function ReceptionLayout() {
     setError('');
     try {
       await signOutAdmin();
-      access.retry();
+      navigate('/', { replace: true });
     } catch {
       setError('No se pudo cerrar la sesión.');
     } finally {
@@ -41,7 +42,7 @@ export function ReceptionLayout() {
         {error && <p role="alert">{error}</p>}
       </main>
     );
-  if (!access.operator) return <ReceptionAccess onSuccess={access.retry} />;
+  if (!access.operator) return <Navigate to="/" replace />;
   return (
     <>
       <NativeBridge />

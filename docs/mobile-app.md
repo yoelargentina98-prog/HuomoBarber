@@ -416,3 +416,9 @@ APK Android actualizado: compilado con `assembleDebug` y verificado que incluye 
 Se detectó `site_url = http://localhost:3000`, puerto sin servidor. Se actualizó y verificó en Supabase a `http://localhost:5173`, preservando todos los destinos permitidos web y nativos. El endpoint público de autorización de Google devuelve 302 hacia accounts.google.com para los destinos explícitos `http://localhost:5173/cliente` y `huomo://cliente`. Esta comprobación no completa el consentimiento ni prueba la sesión del usuario.
 
 La pantalla inicial también resuelve los callbacks PKCE que lleguen a Site URL y dirige según el rol consultado al servidor. No reutilizar códigos de un intento fallido: iniciar nuevamente desde el botón. Para producción, reemplazar Site URL por el dominio real y autorizar sus retornos exactos. En desarrollo, iniciar desde el origen permitido; otro puerto o una IP de red requiere su propia URL autorizada.
+
+## Acceso único al cerrar sesión
+
+Administración, Barbero y Recepción redirigen a `/` con reemplazo de historial después de cerrar sesión correctamente. Sus rutas privadas también redirigen a `/` cuando no hay sesión, en vez de renderizar los antiguos formularios AdminAccess/ReceptionAccess dentro del portal. Cliente ya utilizaba ese destino. Si el cierre devuelve un error, los portales internos muestran el fallo y permiten reintentar.
+
+La raíz sigue siendo WelcomeAccess, compartida para los cuatro roles, registro de clientes y Google. No requiere migraciones ni cambios en Supabase. Las pruebas `unified-logout.test.tsx` comprueban cierre y acceso como invitado desde los tres portales internos, además del fallo de cierre; `router.test.tsx` verifica el formulario unificado desde las rutas privadas. El cambio debe desplegarse en Vercel para reflejarse en la web publicada y sincronizarse/recompilarse para el APK.

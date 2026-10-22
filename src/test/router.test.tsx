@@ -40,7 +40,8 @@ describe('Separación del sitio público y administración', () => {
     '/sucursal/a7cd4e05-8a5f-4a5b-a232-4b490798cd6d',
   ])('exige ingreso privado entrando directamente a %s', async path => {
     renderRoute(path);
-    expect(await screen.findByRole('heading', { name: 'Administración' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Bienvenido' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Continuar con Google' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Ingresar al sistema/i })).toBeInTheDocument();
     expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Crear empleado' })).not.toBeInTheDocument();

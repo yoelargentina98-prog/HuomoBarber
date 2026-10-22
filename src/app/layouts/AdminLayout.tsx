@@ -1,8 +1,7 @@
-import { Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { AdminShell } from '../../features/admin/components/AdminShell';
 import { useAdminAccess } from '../../features/admin/hooks/useAdminAccess';
-import { AdminAccess } from '../../features/staff/components/AdminAccess';
 import { StaffProvider } from '../../features/staff/components/StaffProvider';
 import { signOutAdmin } from '../../features/staff/services/admin-session';
 import { NativeBridge } from '../../shared/native/NativeBridge';
@@ -10,6 +9,7 @@ import '../../features/admin/admin.css';
 
 export function AdminLayout() {
   const access = useAdminAccess();
+  const navigate = useNavigate();
   const [logoutError, setLogoutError] = useState('');
   const [leaving, setLeaving] = useState(false);
 
@@ -32,13 +32,13 @@ export function AdminLayout() {
         </button>
       </main>
     );
-  if (access.status === 'guest') return <AdminAccess onSuccess={access.retry} />;
+  if (access.status === 'guest') return <Navigate to="/" replace />;
   async function logout() {
     setLeaving(true);
     setLogoutError('');
     try {
       await signOutAdmin();
-      access.retry();
+      navigate('/', { replace: true });
     } catch {
       setLogoutError('No se pudo cerrar la sesión. Intentá nuevamente.');
     } finally {
